@@ -3,10 +3,12 @@
     :class="{
       unread: !booking.read,
       untrusted: !isTrusted(booking.contactEmail)
-    }">
+    }"
+    :now="now">
     <el-button @click="read">
       ✉
     </el-button>
+    <br/>
     <el-button @click="cancel" v-if="!booking.cancelled">
       Cancel
     </el-button>
@@ -22,7 +24,7 @@ const {fbDB} = require('../firebase');
 export default {
   props: ['booking'],
   computed: {
-    ...mapState(['trustedEmails', 'isTrusted']),
+    ...mapState(['trustedEmails', 'isTrusted', 'now']),
   },
   components: {
     'bookingRecord': require('./booking-record.vue')

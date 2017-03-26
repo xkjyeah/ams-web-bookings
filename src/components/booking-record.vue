@@ -8,8 +8,13 @@
       <br/>{{booking.pickupTime.substr(11, 5)}}
     </td>
     <td>
-      {{dateformat(booking.createdAt.substr(0, 10), 'dd mmm yyyy')}}
-      <br/>{{booking.createdAt.substr(11, 5)}}
+      <span v-if="now" :title="dateformat(booking.createdAt, 'dd mmm yyyy HH:MM')">
+        {{humanize(now, booking.createdAt)}}
+      </span>
+      <template v-else>
+        {{dateformat(booking.createdAt.substr(0, 10), 'dd mmm yyyy')}}
+        <br/>{{booking.createdAt.substr(11, 5)}}
+      </template>
     </td>
     <td>
       {{booking.patientName}}
@@ -82,7 +87,7 @@ const _ = require('lodash');
 const dateformat = require('dateformat');
 
 export default {
-  props: ['booking'],
+  props: ['booking', 'now'],
   data() {
     return {
       dbRef: null,
@@ -103,6 +108,41 @@ export default {
   methods: {
     ...mapActions(['flashError', 'trustedEmails']),
     dateformat,
+    humanize(now, dateStr) {
+      const match = dateStr.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2})/)
+
+      if (!match || !now) {
+        return '';
+      }
+
+      const dateOfDateStr = new Date(
+        parseInt(match[1]),
+        parseInt(match[2]) - 1,
+        parseInt(match[3]),
+        parseInt(match[4]),
+        parseInt(match[5])
+      )
+
+      const msDiff = now.getTime() - dateOfDateStr.getTime();
+      const suffix = msDiff > 0 ? 'ago' : 'in the future';
+      const absDiff = Math.abs(msDiff);
+
+      if (absDiff < 3600000) {
+        return Math.floor(absDiff / 60000) + ` minutes ${suffix}`
+      } else if (absDiff < 24 * 3600000) {
+        return Math.floor(absDiff / 3600000) + ` hours ${suffix}`
+      } else if (absDiff < 7 * 24 * 3600000) {
+        return Math.floor(absDiff / (24 * 3600000)) + ` days ${suffix}`
+      } else if (absDiff < 28 * 24 * 3600000) {
+        return Math.floor(absDiff / (7 * 24 * 3600000)) + ` weeks ${suffix}`
+      } else if (absDiff < 366 * 24 * 3600000) {
+        return Math.abs(now.getYear() * 12 + now.getMonth() - dateOfDateStr.getYear() * 12 - dateOfDateStr.getMonth())
+          + ` months ${suffix}`
+      } else {
+        return Math.abs(now.getYear() - dateOfDateStr.getYear())
+          + ` years ${suffix}`
+      }
+    }
   }
 }
 </script>

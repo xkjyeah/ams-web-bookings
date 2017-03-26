@@ -17,8 +17,12 @@ const store = new VueX.Store({
     isAdmin: false,
     trustedEmails: [],
     isTrusted: () => false,
+    now: new Date(),
   },
   mutations: {
+    setNow(state, data) {
+      state.now = new Date;
+    },
     setIsAdmin(state, data) {
       state.isAdmin = data;
     },
@@ -86,6 +90,10 @@ fbDB.ref('/users')
   let userData = userDataResponse.val();
   store.commit('setTrustedEmails', _.values(userData).map(u => u.email))
 })
+
+setInterval(() => {
+  store.commit('setNow')
+}, 60000);
 
 fbAuth.onAuthStateChanged((user) => {
   if (user) {

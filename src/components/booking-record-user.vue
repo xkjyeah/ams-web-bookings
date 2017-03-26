@@ -1,5 +1,5 @@
 <template>
-  <booking-record v-if="rec" :booking="rec">
+  <booking-record v-if="rec" :booking="rec" :now="now">
     <el-button @click="cancel" v-if="!rec.cancelled">
       Cancel
     </el-button>
@@ -21,6 +21,9 @@ export default {
   props: ['id'],
   components: {
     'bookingRecord': require('./booking-record.vue')
+  },
+  computed: {
+    ...mapState(['now'])
   },
   data() {
     return {
