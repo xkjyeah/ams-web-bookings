@@ -12,7 +12,7 @@ const app = firebase.initializeApp({
   credential: firebase.credential.cert({
     projectId: "ams-bookings",
     clientEmail: "background-tasks@ams-bookings.iam.gserviceaccount.com",
-    privateKey: process.env.PRIVATE_KEY
+    privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n')
   }),
   databaseURL: "https://ams-bookings.firebaseio.com"
 });
@@ -21,7 +21,7 @@ const db = app.database();
 
 function triggerWebhook(booking) {
   return rp({
-    uri: process.env.WEBHOOK_URL.replace(/ /g, '\n'),
+    uri: process.env.WEBHOOK_URL,
     json: true,
     body: booking
   })
@@ -54,7 +54,7 @@ function poll(when = Date.now()) {
             ...value,
             id
           }))
-          // .filter(v => !v.isProcessed)
+          .filter(v => !v.isProcessed)
           .value()
 
         console.log(`There are ${newBookings.length} new bookings`)
