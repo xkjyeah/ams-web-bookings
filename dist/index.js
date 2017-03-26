@@ -17522,9 +17522,9 @@ module.exports = {
       if (!s) {
         return null;
       } else {
-        var match = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/);
+        var dateMatch = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2}) /);
 
-        if (!match) {
+        if (!dateMatch) {
           return null;
         }
 
@@ -35273,13 +35273,19 @@ var dateformat = __webpack_require__(116);
 
 module.exports = function (s, u) {
   if (typeof s === 'string') {
-    var match = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/);
+    var match = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})/);
 
-    if (!match) {
-      throw new Error("Invalid date: " + s);
+    if (match) {
+      return dateformat(new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]), parseInt(match[4]), parseInt(match[5]), parseInt(match[6])), u);
     }
 
-    s = new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]));
+    var match2 = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/);
+
+    if (!match2) {
+      throw new Error("Invalid date: " + s);
+    } else {
+      return dateformat(new Date(parseInt(match2[1]), parseInt(match2[2]), parseInt(match2[3])), u);
+    }
   }
 
   return dateformat(s, u);
