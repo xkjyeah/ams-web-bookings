@@ -21,7 +21,7 @@ const db = app.database();
 
 function triggerWebhook(booking) {
   return rp({
-    uri: process.env.WEBHOOK_URL,
+    uri: process.env.WEBHOOK_URL.replace(/ /g, '\n'),
     json: true,
     body: booking
   })

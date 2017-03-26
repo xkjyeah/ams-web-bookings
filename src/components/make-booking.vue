@@ -263,8 +263,11 @@ export default {
     },
 
     doSubmit() {
-      const pickupTimeParts = this.request.pickupTime.split(':')
-        .map(x => parseInt(x))
+      const pickupTimeParts = [
+        this.request.pickupTime.getHours(),
+        this.request.pickupTime.getMinutes(),
+        0
+      ]
       const now = new Date()
 
       const data = {
@@ -274,7 +277,7 @@ export default {
           leftPad(this.request.pickupDate.getFullYear(), 4, '0'),
           leftPad(this.request.pickupDate.getMonth() + 1, 2, '0'),
           leftPad(this.request.pickupDate.getDate(), 2, '0'),
-        ].join('-') + ' ' + this.request.pickupTime + ':00',
+        ].join('-') + ' ' + pickupTimeParts.map(x => leftPad(x, 2, '0')).join(':'),
 
         createdAt: [
           leftPad(now.getFullYear(), 4, '0'),
