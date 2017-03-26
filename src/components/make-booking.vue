@@ -112,6 +112,10 @@
             Patient has his own wheelchair
           </el-radio>
           <br/>
+          <el-radio v-model="request.wheelchairStretcher" label="Motorized WC">
+            Patient uses <b>motorized</b> wheelchair
+          </el-radio>
+          <br/>
           <el-radio v-model="request.wheelchairStretcher" label="Ambulance WC">
             Patient requires a wheelchair from the ambulance company
           </el-radio>

@@ -99,7 +99,8 @@ export default {
         return ({
           'OWC': 'Use patient\'s wheelchair',
           'Stretcher': 'Stretcher required',
-          'Amb WC': 'Ambulance Wheelchair required',
+          'Ambulance WC': 'Ambulance Wheelchair required',
+          'Motorized WC': 'Motorized Wheelchair',
           '-': ''
         })[this.booking.wheelchairStretcher] || this.booking.wheelchairStatus
       }
