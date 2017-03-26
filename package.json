@@ -3,19 +3,24 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "engines": {
+    "node": "7.5.x"
+  },
   "scripts": {
     "watch": "webpack -w",
-    "build": "npm run build-webpack",
+    "build": "npm run build-webpack && npm run heroku-postbuild",
     "http": "http-server -c-1 www",
     "build-webpack": "webpack",
     "deploy": "npm run build && gh-pages -d www",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node server.js"
+    "heroku-postbuild": "babel --out-file server.transpiled.js server.js",
+    "start": "node server.transpiled.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "babel-core": "^6.23.1",
+    "babel-cli": "^6.24.0",
+    "babel-core": "^6.24.0",
     "babel-loader": "^6.4.0",
     "babel-preset-airbnb": "^2.2.3",
     "css-loader": "^0.27.1",
