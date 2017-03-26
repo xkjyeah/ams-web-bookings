@@ -15,14 +15,17 @@
             type="date" />
         </el-form-item>
         <el-form-item prop="pickupTime" label="Pickup Time 24-hour time (00:00 for midnight, 12:00 for noon)">
-          <el-time-select v-model="request.pickupTime"
-            :picker-options="{step: '00:01'}"
+          <el-time-picker v-model="request.pickupTime"
+            :picker-options="{
+              selectableRange: '00:00:00 - 23:59:00'
+            }"
             format="HH:mm"
             />
         </el-form-item>
 
         <el-form-item prop="appointmentTime" label="Appointment time at clinic/hospital (if applicable)">
-          <el-time-select format="HH:mm" v-model="request.appointmentTime" />
+          <el-time-picker format="HH:mm" v-model="request.appointmentTime"
+          />
         </el-form-item>
 
 
