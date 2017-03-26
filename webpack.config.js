@@ -24,14 +24,20 @@ const defaultExport = {
         loader: 'babel-loader',
       },
       {
-        // edit this for additional asset file types
-        test: /\.(png|jpg|gif)$/,
-        loader: 'file-loader?name=[name].[ext]?[hash]',
+        test: /\.(eot|svg|ttf|woff|woff2)(\?\S*)?$/,
+        loader: 'file-loader'
       },
       {
-        test: /\.woff$|\.png$/,
-        loader: 'url-loader?prefix=/&limit=10000&mimetype=application/font-woff'
-      }
+        test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
+        loader: 'file-loader',
+        query: {
+          name: '[name].[ext]?[hash]'
+        }
+      },
+      {
+        test: /\.css$/,
+        loader: 'style-loader!css-loader'
+      },
     ],
   },
 };

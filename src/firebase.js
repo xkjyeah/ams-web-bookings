@@ -15,10 +15,20 @@ module.exports = {
   fbDB: app.database(),
   fbStorage: app.storage(),
 
-  fbSignIn() {
+  fbSignInGoogle() {
     return app.auth().signInWithPopup(provider);
   },
   fbSignOut() {
     return app.auth().signOut();
-  }
+  },
+
+  fbSignInPassword(email, password) {
+    return app.auth().signInWithEmailAndPassword(email, password)
+  },
+  fbSignUpPassword(email, password) {
+    return app.auth().createUserWithEmailAndPassword(email, password)
+  },
+  fbResetPassword(email, password) {
+    return app.auth().sendPasswordResetEmail(email)
+  },
 };

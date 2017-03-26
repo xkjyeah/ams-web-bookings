@@ -1,5 +1,5 @@
 <template>
-<div>
+<div v-if="user">
   <el-form class="filter-area">
     <div class="options">
       <el-radio label="Request Date" v-model="filter.filterField" />
@@ -28,11 +28,15 @@
       </tr>
     </thead>
     <tbody>
-      <booking-record-user v-for="booking in bookings"
-        :id="booking.id" :key="booking.id" />
+      <booking-record-admin v-for="booking in sortedBookings"
+        :booking="booking" :key="booking.id">
+      </booking-record-admin>
     </tbody>
   </table>
   <i class="el-icon-loading" v-else />
+</div>
+<div v-else>
+  <my-login />
 </div>
 </template>
 <style lang="scss" scoped>
@@ -106,51 +110,44 @@ export default {
   },
   computed: {
     ...mapState(['user', 'userData']),
-    userBookingRef() {
-      if (this.user && this.user.uid) {
-        return `/userBookings/${this.user.uid}`
-      }
-    },
-    fbRef() {
-      if (this.userBookingRef) {
-        let fbRef = fbDB.ref(this.userBookingRef)
-
-        if (this.filter.filterField == 'Request Date') {
-          fbRef = fbRef.orderByChild('createdAt')
-        } else {
-          fbRef = fbRef.orderByChild('pickupTime')
-        }
-
-        if (this.filter.futureOnly) {
-          fbRef = fbRef.startAt(dateformat(new Date(), 'yyyy-mm-dd'))
-        } else if (this.filter.dates && this.filter.dates[0] && this.filter.dates[1]) {
-          const realEndDate = new Date(this.filter.dates[1]);
-          realEndDate.setDate(realEndDate.getDate() + 1)
-          fbRef = fbRef
-          .startAt(dateformat(this.filter.dates[0], 'yyyy-mm-dd'))
-          .endAt(dateformat(realEndDate, 'yyyy-mm-dd'))
-        } else {
-          fbRef = fbRef
-          .startAt(dateformat(new Date(), 'yyyy-mm-dd'))
-          .endAt(dateformat(new Date(), 'yyyy-mm-dd'))
-        }
-        return fbRef;
-      }
-    }
-  },
-  components: {
-    'myLogin': require('./login.vue'),
-    'bookingRecordUser': require('./booking-record-user.vue'),
-    'myCalendar': require('./calendar.vue')
-  },
-  methods: {
-    ...mapActions(['loadingSpinner', 'flashError']),
     sortedBookings() {
       return this.bookings && _.orderBy(this.bookings,
         [this.sort.field],
         [this.sort.order]
       )
     },
+    fbRef() {
+      let fbRef = fbDB.ref('/bookings')
+
+      if (this.filter.filterField == 'Request Date') {
+        fbRef = fbRef.orderByChild('createdAt')
+      } else {
+        fbRef = fbRef.orderByChild('pickupTime')
+      }
+
+      if (this.filter.futureOnly) {
+        fbRef = fbRef.startAt(dateformat(new Date(), 'yyyy-mm-dd'))
+      } else if (this.filter.dates && this.filter.dates[0] && this.filter.dates[1]) {
+        const realEndDate = new Date(this.filter.dates[1]);
+        realEndDate.setDate(realEndDate.getDate() + 1)
+        fbRef = fbRef
+        .startAt(dateformat(this.filter.dates[0], 'yyyy-mm-dd'))
+        .endAt(dateformat(realEndDate, 'yyyy-mm-dd'))
+      } else {
+        fbRef = fbRef
+        .startAt(dateformat(new Date(), 'yyyy-mm-dd'))
+        .endAt(dateformat(new Date(), 'yyyy-mm-dd'))
+      }
+      return fbRef;
+    }
+  },
+  components: {
+    'myLogin': require('./login.vue'),
+    'bookingRecordAdmin': require('./booking-record-admin.vue'),
+    'myCalendar': require('./calendar.vue')
+  },
+  methods: {
+    ...mapActions(['loadingSpinner', 'flashError']),
     toggleSort(field) {
       if (this.sort.field == field) {
         this.sort.order = (this.sort.order == 'asc') ?

@@ -1,14 +1,27 @@
 const Vue = require('vue/dist/vue');
 const VueRouter = require('vue-router').default;
 const VueX = require('vuex');
+const VeeValidate = require('vee-validate');
+const ElementUI = require('element-ui');
+import lang from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale'
+
+// configure language
+locale.use(lang)
+
+require('element-ui/lib/theme-default/index.css')
 const App = require('./components/app.vue');
 
 Vue.use(VueX);
 Vue.use(VueRouter);
+Vue.use(ElementUI);
+Vue.use(VeeValidate);
 
 const routes = [
   {path: '/', component: require('./components/make-booking.vue')},
   {path: '/history', component: require('./components/past-bookings.vue')},
+  {path: '/all-bookings', component: require('./components/all-bookings.vue')},
+  {path: '/login', component: require('./components/login.vue')},
 ];
 
 const {mapState, mapActions} = VueX;
@@ -36,5 +49,5 @@ new Vue({
       'signIn', 'signOut'
     ])
   },
-  store: require('./store.js')
+  store: require('./store.js').default
 })

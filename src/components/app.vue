@@ -1,16 +1,25 @@
 <template>
   <main>
-    <nav class="navbar navbar-default">
-      <ul class="navbar-nav nav">
-        <router-link active-class="active" tag="li" to="/"><a>Make a new Booking</a></router-link>
-        <router-link active-class="active" tag="li" to="/history"><a>View past bookings</a></router-link>
-        <li v-if="user"><a>{{user.email}}</a></li>
-        <li v-if="user"><a @click="signOut()">Log out</a></li>
-        <li v-else><a @click="signIn()">Log In</a></li>
-      </ul>
-    </nav>
+    <el-menu mode="horizontal" :router="true" class="nav-part">
+      <template v-if="!isAdmin">
+        <el-menu-item index="/"><a>Make a new Booking</a></el-menu-item>
+        <el-menu-item index="/history"><a>View past bookings</a></el-menu-item>
+      </template>
+      <template v-else>
+        <el-menu-item index="/all-bookings">All Bookings</el-menu-item>
+      </template>
+      <li class="el-menu-item" v-if="user">{{user.email}}</li>
+      <li class="el-menu-item" v-if="user" @click="signOut()">Log out</li>
+      <el-menu-item index="/login" v-if="!user">Login</el-menu-item>
+    </el-menu>
 
     <div>
+      <loading-overlay v-show="isLoading">
+      </loading-overlay>
+      <error-overlay v-show="errorMessage" :title="errorMessage"
+        :type="errorType">
+      </error-overlay>
+
       <router-view></router-view>
     </div>
   </main>
@@ -23,6 +32,7 @@ import Vue from 'vue/dist/vue';
 
 const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');
+const {fbAuth} = require('../firebase')
 
 export default {
   data() {
@@ -33,12 +43,17 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user'])
+    ...mapState(['user', 'isLoading', 'errorMessage', 'errorType', 'isAdmin',
+      'trustedEmails', 'isTrusted'])
+  },
+  components: {
+    'loadingOverlay': require('./loading-overlay.vue'),
+    'errorOverlay': require('./error-overlay.vue'),
   },
   methods: {
-    ...mapActions(['signIn', 'signOut']),
-    submit() {
-
+    signOut() {
+      fbAuth.signOut();
+      this.$router.push('/login')
     }
   }
 }
@@ -46,8 +61,7 @@ export default {
 </script>
 
 <style>
-main {
-  padding: 1em;
+.nav-part {
   max-width: 700px;
   margin: 0 auto;
 }

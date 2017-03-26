@@ -10,37 +10,67 @@ Vue.use(VueX);
 const store = new VueX.Store({
   state: {
     user: null,
+    userData: null,
+    isLoading: false,
+    errorMessage: '',
+    errorType: '',
+    isAdmin: false,
+    trustedEmails: [],
+    isTrusted: () => false,
   },
   mutations: {
+    setIsAdmin(state, data) {
+      state.isAdmin = data;
+    },
     setUser(state, data) {
       state.user = data;
-    }
+    },
+    setUserData(state, data) {
+      state.userData = data;
+    },
+    setTrustedEmails(state, data) {
+      state.trustedEmails = data;
+      state.isTrusted = (testEmail) => {
+        const rv = state.trustedEmails.find(email => {
+          if (email.startsWith('@')) {
+            return testEmail.endsWith(email)
+          } else {
+            return email.toLowerCase() == testEmail.toLowerCase()
+          }
+        })
+        return rv;
+      }
+    },
+    setIsLoading(state, data) {
+      state.isLoading = data
+    },
+    setErrorMessage(state, data) {
+      if (!data) {
+        state.errorMessage = null;
+        state.errorType = null;
+      } else {
+        assert(data.message || data.code)
+        state.errorMessage = data.message || data.code
+        state.errorType = data.type || 'error'
+      }
+    },
   },
   actions: {
-    addNewPlan(context) {
-      const newKey = fbDB.ref('pricePlans').push().key
-      return fbDB.ref(`pricePlans/${newKey}`).update({
-        id: newKey
-      })
+    loadingSpinner(context, promise) {
+      context.commit('setIsLoading', true)
+
+      return promise.then(
+        () => context.commit('setIsLoading', false),
+        (err) => {
+          context.commit('setIsLoading', false)
+          throw err; // don't suppress
+        }
+      )
     },
-    deletePlan(context, key) {
-      assert(key);
-      return fbDB.ref(`pricePlans/${key}`).remove()
+    flashError(context, message) {
+      context.commit('setErrorMessage', message)
+      setTimeout(() => context.commit('setErrorMessage', null), 10000)
     },
-    updatePlan(context, data) {
-      assert(data.id);
-      return fbDB.ref(`pricePlans/${data.id}`)
-        .update(_(data)
-          .pick(data, _.keys(data).filter(key => data[key] !== undefined))
-          .value()
-        )
-    },
-    signIn(context) {
-      fbSignIn()
-    },
-    signOut(state) {
-      fbSignOut()
-    }
   },
   getters: {
 
@@ -49,12 +79,40 @@ const store = new VueX.Store({
 
 ////////// Tying the data links between firebase and the store
 
+let userData = {};
+
+fbDB.ref('/users')
+.once('value', (userDataResponse) => {
+  let userData = userDataResponse.val();
+  store.commit('setTrustedEmails', _.values(userData).map(u => u.email))
+})
+
 fbAuth.onAuthStateChanged((user) => {
   if (user) {
-    store.commit('setUser', {email:user.email})
+    store.commit('setUser', user)
+    store.commit('setUserData', _.values(userData).find(u => u.email == user.email))
+
+    Promise.race([
+      new Promise((resolve, reject) => {
+        // Do a privileged action, and expect it to succeed
+        fbDB.ref('/admins')
+          .orderByKey()
+          .limitToFirst(1)
+          .once('value', (userDataResponse) => {
+            resolve(true)
+          })
+      }),
+      new Promise((resolve) => setTimeout(() => resolve(false), 10000))
+    ])
+    .then((amIAdmin) => {
+      store.commit('setIsAdmin', amIAdmin)
+    })
+
   } else {
     store.commit('setUser', null)
+    store.commit('setUserData', null)
+    store.commit('setIsAdmin', false)
   }
 })
 
-module.exports = store;
+export default store;
