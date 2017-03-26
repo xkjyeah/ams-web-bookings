@@ -63,7 +63,7 @@
 }
 </style>
 <script>
-const dateformat = require('dateformat')
+const dateformat = require('../util/dateformat')
 const _ = require('lodash');
 
 export default {
@@ -87,7 +87,7 @@ export default {
     },
     today(m) {
       if (m) {
-        const theMonth = new Date(m)
+        const theMonth = new Date(m.getTime())
         theMonth.setHours(0,0,0,0)
         theMonth.setDate(1)
 
@@ -106,7 +106,7 @@ export default {
       return 'M,T,W,T,F,S,S'.split(',')
     },
     startDay() {
-      var m = new Date(this.monthDate)
+      var m = new Date(this.monthDate.getTime())
       m.setDate(1)
 
       // sunday is always zero
@@ -118,7 +118,7 @@ export default {
     weeks() {
       return _.range(0,5).map(weeknum => ({
         days: _.range(0,7).map(day => {
-          var m = new Date(this.startDay)
+          var m = new Date(this.startDay.getTime())
           m.setDate(m.getDate() + weeknum * 7 + day)
 
           return {
@@ -165,7 +165,7 @@ export default {
     },
     addMonth(n) {
       if (this.disabled) return;
-      this.monthDate = new Date(this.monthDate)
+      this.monthDate = new Date(this.monthDate.getTime())
       this.monthDate.setMonth(this.monthDate.getMonth() + n)
     }
   },

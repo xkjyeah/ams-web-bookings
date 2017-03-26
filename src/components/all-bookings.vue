@@ -72,7 +72,7 @@ const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');
 const {fbDB} = require('../firebase');
 const _ = require('lodash');
-const dateformat = require('dateformat');
+const dateformat = require('../util/dateformat');
 
 export default {
   data() {
@@ -128,15 +128,15 @@ export default {
       if (this.filter.futureOnly) {
         fbRef = fbRef.startAt(dateformat(new Date(), 'yyyy-mm-dd'))
       } else if (this.filter.dates && this.filter.dates[0] && this.filter.dates[1]) {
-        const realEndDate = new Date(this.filter.dates[1]);
+        const realEndDate = new Date(this.filter.dates[1].getTime());
         realEndDate.setDate(realEndDate.getDate() + 1)
         fbRef = fbRef
         .startAt(dateformat(this.filter.dates[0], 'yyyy-mm-dd'))
         .endAt(dateformat(realEndDate, 'yyyy-mm-dd'))
       } else {
         fbRef = fbRef
-        .startAt(dateformat(new Date(), 'yyyy-mm-dd'))
-        .endAt(dateformat(new Date(), 'yyyy-mm-dd'))
+        .startAt(dateformat(new Date().getTime(), 'yyyy-mm-dd'))
+        .endAt(dateformat(new Date().getTime(), 'yyyy-mm-dd'))
       }
       return fbRef;
     }

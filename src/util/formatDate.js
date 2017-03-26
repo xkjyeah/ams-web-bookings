@@ -14,9 +14,9 @@ module.exports = {
     if (!s) {
       return null;
     } else {
-      let match = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/)
+      let dateMatch = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2}) /)
 
-      if (!match) {
+      if (!dateMatch) {
         return null;
       }
 

@@ -84,7 +84,7 @@ import Vue from 'vue/dist/vue';
 import leftPad from 'left-pad';
 const {fbDB} = require('../firebase');
 const _ = require('lodash');
-const dateformat = require('dateformat');
+const dateformat = require('../util/dateformat');
 
 export default {
   props: ['booking', 'now'],
