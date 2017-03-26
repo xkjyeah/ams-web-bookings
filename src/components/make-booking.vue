@@ -121,6 +121,10 @@
           </el-radio>
         </el-form-item>
 
+        <el-form-item prop="precautions" label="Remarks">
+          <el-input type="textarea" v-model="request.precautions" />
+        </el-form-item>
+
         <el-form-item prop="oxygenRate" label="Oxygen flow rate (if required) (l/min)">
           <el-input-number v-model="request.oxygenRate" :step="1" :min="0" :max="10"
           show-stops :show-input="true" />
@@ -190,6 +194,7 @@ function blankRequest() {
   //   contactPerson: 'Test Staff Nurse',
   //   contactPhone: '1234567',
   //
+  // precautions: null,
   //   pickupDate: new Date(Date.now() + 24*60*60*1000),
   //   pickupTime: '12:00',
   // }
@@ -209,7 +214,7 @@ function blankRequest() {
     accompanyingPassengers: null,
     contactPerson: null,
     contactPhone: null,
-
+    precautions: null,
     pickupDate: null,
     pickupTime: null,
   }

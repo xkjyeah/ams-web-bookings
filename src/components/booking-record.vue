@@ -48,6 +48,7 @@
       <span v-if="booking.accompanyingPassengers">✓ Accompanied by {{booking.accompanyingPassengers}}<br/></span>
       <span v-if="wheelchairStatus">✓ {{wheelchairStatus}}<br/></span>
       <span v-if="booking.appointmentTime">✓ Appointment time: {{booking.appointmentTime}}<br/></span>
+      <span v-if="booking.precautions">✓ {{booking.precautions}}<br/></span>
     </td>
     <td>
       <slot>
