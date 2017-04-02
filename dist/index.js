@@ -35276,7 +35276,7 @@ module.exports = function (s, u) {
     var match = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})/);
 
     if (match) {
-      return dateformat(new Date(parseInt(match[1]), parseInt(match[2]), parseInt(match[3]), parseInt(match[4]), parseInt(match[5]), parseInt(match[6])), u);
+      return dateformat(new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]), parseInt(match[4]), parseInt(match[5]), parseInt(match[6])), u);
     }
 
     var match2 = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})/);
@@ -35284,7 +35284,7 @@ module.exports = function (s, u) {
     if (!match2) {
       throw new Error("Invalid date: " + s);
     } else {
-      return dateformat(new Date(parseInt(match2[1]), parseInt(match2[2]), parseInt(match2[3])), u);
+      return dateformat(new Date(parseInt(match2[1]), parseInt(match2[2]) - 1, parseInt(match2[3])), u);
     }
   }
 
@@ -72325,7 +72325,7 @@ exports['default'] = {
         },
         sort: {
           field: 'pickupTime',
-          order: 'desc'
+          order: 'asc'
         }
       };
     }
