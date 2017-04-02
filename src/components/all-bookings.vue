@@ -85,7 +85,7 @@ export default {
       },
       sort: {
         field: 'pickupTime',
-        order: 'desc'
+        order: 'asc'
       }
     }
   },

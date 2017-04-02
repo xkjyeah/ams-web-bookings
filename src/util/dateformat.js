@@ -7,7 +7,7 @@ module.exports = (s, u) => {
     if (match) {
       return dateformat(new Date(
         parseInt(match[1]),
-        parseInt(match[2]),
+        parseInt(match[2]) - 1,
         parseInt(match[3]),
         parseInt(match[4]),
         parseInt(match[5]),
@@ -22,7 +22,7 @@ module.exports = (s, u) => {
     } else {
       return dateformat(new Date(
         parseInt(match2[1]),
-        parseInt(match2[2]),
+        parseInt(match2[2]) - 1,
         parseInt(match2[3])
       ), u);
     }
