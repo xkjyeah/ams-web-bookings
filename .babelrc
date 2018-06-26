@@ -1,3 +1,4 @@
 {
-"presets": ["airbnb"]
+"presets": [["env", {"targets": {"browsers": "ie 11"}}]],
+"plugins": ["transform-object-rest-spread"]
 }

@@ -1,9 +1,14 @@
-var webpack = require('webpack');
+const webpack = require('webpack')
+const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const path = require('path')
 
 const defaultExport = {
-  entry: './src/index.js',
+  entry: [
+    'babel-polyfill',
+    './src/index.js'
+  ],
   output: {
-    path: './www/dist',
+    path: path.resolve('./www/dist'),
     publicPath: 'dist/',
     filename: 'index.js'
   },
@@ -35,29 +40,20 @@ const defaultExport = {
         }
       },
       {
+        test: /\.scss$/,
+        use: ['vue-style-loader', 'css-loader', 'sass-loader']
+      },
+      {
         test: /\.css$/,
-        loader: 'style-loader!css-loader'
+        use: ['vue-style-loader', 'css-loader']
       },
     ],
   },
+  mode: process.env.NODE_ENV || 'development',
+  plugins: [
+    new VueLoaderPlugin()
+  ]
 };
 
-if (process.env.NODE_ENV === 'production') {
-  defaultExport.plugins = [
-    new webpack.DefinePlugin({
-      'process.env': {
-        NODE_ENV: '"production"'
-      }
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
-    }),
-  ];
-} else {
-  defaultExport.devtool = 'source-map';
-}
-
 // The other files:
-module.exports = [defaultExport]
+module.exports = defaultExport

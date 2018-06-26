@@ -1,14 +1,15 @@
 <template>
-  <div v-if="user && user.emailVerified && request" class="make-booking">
+<v-layout>
+  <v-flex v-if="user && user.emailVerified" class="make-booking">
     <img src="http://www.ambulanceservice.com.sg/images/logo.png" class="logo"/>
 
     <h1>AMS Transport Booking Form</h1>
 
-    <el-form :rules="formRules" :model="request" ref="formRules">
+    <!-- <el-form :rules="formRules" :model="request" ref="formRules"> -->
       <section>
-        <el-form-item prop="email" label="Email">
-          <el-input :value="user.email" :disabled="true" />
-        </el-form-item>
+        <v-text-field :type="email" label="Email (log out to change)"
+          :value="user.email" :disabled="true" />
+
         <el-form-item prop="pickupDate" label="Pickup Date">
           <el-date-picker v-model="request.pickupDate"
             format="dd MMM yyyy"
@@ -156,16 +157,14 @@
         </el-form-item>
       </section>
 
-      <el-button type="primary" @click="submit()">Submit!</el-button>
-    </el-form>
-  </div>
-  <div v-else-if="user && user.emailVerified && !request" class="make-booking">
-    <el-button type="primary" @click="newBooking">Make a new booking</el-button>
-  </div>
-  <div v-else class="make-booking">
+      <v-btn type="primary" @click="submit()">Submit!</v-btn>
+    <!-- </el-form> -->
+  </v-flex>
+  <v-flex v-else class="make-booking">
     You must be logged in!
     <my-login />
-  </div>
+  </v-flex>
+</v-layout>
 </template>
 
 <script>
@@ -247,7 +246,7 @@ export default {
         ],
       },
       error: null,
-      request: null, //blankRequest(),
+      request: blankRequest(),
     }
   },
   computed: {

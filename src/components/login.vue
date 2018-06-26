@@ -2,26 +2,23 @@
   <div class="login">
     <div v-if="!user">
       <h3>Login with Google</h3>
-      <el-button @click="loginGoogle" type="primary">Login with Google</el-button>
+      <v-btn @click="loginGoogle" type="primary">Login with Google</v-btn>
 
       <h3>Login with Email/Password</h3>
-      <el-radio-group v-model="mode">
-        <el-radio-button label="login">Log In</el-radio-button>
-        <el-radio-button label="signup">Sign up</el-radio-button>
-        <el-radio-button label="reset">Reset password</el-radio-button>
-      </el-radio-group>
-      <el-form>
-        <el-form-item label="Email">
-          <el-input :disabled="mode == 'request'"
-            v-model="email" placeholder="e.g. john@example.com" />
-        </el-form-item>
-        <el-form-item label="Password" v-show="mode == 'login' || mode == 'signup'">
-          <el-input type="password" v-model="password" placeholder="*******" />
-        </el-form-item>
-        <el-button v-if="mode == 'login'" @click="loginPassword">Login</el-button>
-        <el-button v-if="mode == 'signup'" @click="signupPassword">Sign up</el-button>
-        <el-button v-if="mode == 'reset'" @click="resetPassword">Send password reset email</el-button>
-      </el-form>
+      <v-radio-group v-model="mode">
+        <v-radio value="login" label="Log In" />
+        <v-radio value="signup" label="Sign up" />
+        <v-radio value="reset" label="Reset password" />
+      </v-radio-group>
+      <v-form>
+        <v-text-field label="Email"
+          v-model="email" placeholder="e.g. john@example.com" />
+        <v-text-field label="Password" type="password" v-model="password" placeholder="*******"
+          v-show="mode == 'login' || mode == 'signup'"/>
+        <v-btn v-if="mode == 'login'" @click="loginPassword">Login</v-btn>
+        <v-btn v-if="mode == 'signup'" @click="signupPassword">Sign up</v-btn>
+        <v-btn v-if="mode == 'reset'" @click="resetPassword">Send password reset email</v-btn>
+      </v-form>
     </div>
     <div v-else-if="user && !user.emailVerified">
       <p>Thank you for signing up!</p>
@@ -30,7 +27,7 @@
         to proceed
       </p>
       <p>
-        <el-button @click="sendVerification">Re-send Verification Email</el-button>
+        <v-btn @click="sendVerification">Re-send Verification Email</v-btn>
       </p>
     </div>
     <div v-else>
@@ -56,6 +53,17 @@ export default {
       mode: 'login',
       postSignUp: false,
     };
+  },
+  watch: {
+    /* Automatic redirect to make bookings page */
+    'user.email': {
+      immediate: true,
+      handler (e) {
+        if (e) {
+          window.location.href = "#/"
+        }
+      }
+    }
   },
   computed: {
     ...mapState(['user']),

@@ -20,11 +20,6 @@ export default {
   data() {
     return {buffer: null};
   },
-  components: {
-    // Documentation at https://wffranco.github.io/vue-strap/#datepicker
-    'date-picker': require('vue-strap/src/Datepicker.vue')
-    // 'date-picker': require('vuejs-datepicker')
-  },
   methods: {
     checkInput() {
       try {

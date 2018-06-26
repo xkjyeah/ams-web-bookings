@@ -1,38 +1,55 @@
 <template>
-  <main>
-    <el-menu mode="horizontal" :router="true" class="nav-part">
-      <template v-if="!isAdmin">
-        <el-menu-item index="/"><a>Make a new Booking</a></el-menu-item>
-        <el-menu-item index="/history"><a>View past bookings</a></el-menu-item>
-      </template>
-      <template v-else>
-        <el-menu-item index="/all-bookings">All Bookings</el-menu-item>
-      </template>
-      <li class="el-menu-item" v-if="user">{{user.email}}</li>
-      <li class="el-menu-item" v-if="user" @click="signOut()">Log out</li>
-      <el-menu-item index="/login" v-if="!user">Login</el-menu-item>
-    </el-menu>
+<v-app>
+  <v-content>
+    <v-toolbar>
+      <v-toolbar-title>{{user ? user.email : 'AMS Bookings'}}</v-toolbar-title>
+      <v-spacer />
+      <v-toolbar-items>
+        <template v-if="!isAdmin">
+          <v-btn flat tag="a" href="#/" >
+            New Booking
+          </v-btn>
+          <v-btn flat tag="a" href="#/history" >
+            History
+          </v-btn>
+        </template>
+        <template v-else>
+          <v-btn flat tag="a" href="#/all-bookings" >
+            All Bookings
+          </v-btn>
+        </template>
 
-    <div>
-      <loading-overlay v-show="isLoading">
-      </loading-overlay>
-      <error-overlay v-show="errorMessage" :title="errorMessage"
-        :type="errorType">
-      </error-overlay>
-
-      <router-view></router-view>
-    </div>
-  </main>
-
+        <v-btn flat v-if="user" @click="signOut()">
+          Log out
+        </v-btn>
+        <v-btn flat tag="a" href="#/login" v-else>
+          Log in
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+    <loading-overlay v-show="isLoading">
+    </loading-overlay>
+    <error-overlay
+      v-show="errorMessage"
+      :title="errorMessage"
+      @cancel="setErrorMessage($event)"
+      :type="errorType">
+    </error-overlay>
+    <router-view></router-view>
+  </v-content>
+</v-app>
 </template>
 
 <script>
-import {mapState, mapActions} from 'vuex';
+import {mapState, mapActions, mapMutations} from 'vuex';
 import Vue from 'vue/dist/vue';
 
 const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');
 const {fbAuth} = require('../firebase')
+
+import LoadingOverlay from './loading-overlay.vue'
+import ErrorOverlay from './error-overlay.vue'
 
 export default {
   data() {
@@ -47,10 +64,10 @@ export default {
       'trustedEmails', 'isTrusted'])
   },
   components: {
-    'loadingOverlay': require('./loading-overlay.vue'),
-    'errorOverlay': require('./error-overlay.vue'),
+    LoadingOverlay, ErrorOverlay
   },
   methods: {
+    ...mapMutations(['setErrorMessage']),
     signOut() {
       fbAuth.signOut();
       this.$router.push('/login')
