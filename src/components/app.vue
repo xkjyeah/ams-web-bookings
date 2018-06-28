@@ -4,28 +4,31 @@
     <v-toolbar>
       <v-toolbar-title>{{user ? user.email : 'AMS Bookings'}}</v-toolbar-title>
       <v-spacer />
-      <v-toolbar-items>
-        <template v-if="!isAdmin">
-          <v-btn flat tag="a" href="#/" >
-            New Booking
-          </v-btn>
-          <v-btn flat tag="a" href="#/history" >
-            History
-          </v-btn>
-        </template>
-        <template v-else>
-          <v-btn flat tag="a" href="#/all-bookings" >
-            All Bookings
-          </v-btn>
-        </template>
+      <template v-if="!isAdmin">
+        <v-btn icon tag="a" href="#/" >
+          <v-icon>mdi-plus</v-icon>
+          <!-- <span>New Booking</span> -->
+        </v-btn>
+        <v-btn icon tag="a" href="#/history" >
+          <v-icon>mdi-calendar</v-icon>
+          <!-- History -->
+        </v-btn>
+      </template>
+      <template v-else>
+        <v-btn icon tag="a" href="#/all-bookings" >
+          <v-icon>mdi-calendar</v-icon>
+          <!-- All Bookings -->
+        </v-btn>
+      </template>
 
-        <v-btn flat v-if="user" @click="signOut()">
-          Log out
-        </v-btn>
-        <v-btn flat tag="a" href="#/login" v-else>
-          Log in
-        </v-btn>
-      </v-toolbar-items>
+      <v-btn icon v-if="user" @click="signOut()">
+        <v-icon>mdi-logout</v-icon>
+        <!-- Log out -->
+      </v-btn>
+      <v-btn icon tag="a" href="#/login" v-else>
+        <v-icon>mdi-login</v-icon>
+        <!-- Log in -->
+      </v-btn>
     </v-toolbar>
     <loading-overlay v-show="isLoading">
     </loading-overlay>
