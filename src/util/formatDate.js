@@ -1,30 +1,31 @@
 const leftPad = require('left-pad');
 
-module.exports = {
-  formatDate(date) {
-    return date &&
-      [
-        leftPad(date.getFullYear(), 4, '0'),
-        leftPad(date.getMonth() + 1, 2, '0'),
-        leftPad(date.getDate(), 2, '0'),
-      ].join('-');
-  },
+export function formatDateYMD(date) {
+  return date &&
+    [
+      leftPad(date.getUTCFullYear(), 4, '0'),
+      leftPad(date.getUTCMonth() + 1, 2, '0'),
+      leftPad(date.getUTCDate(), 2, '0'),
+    ].join('-');
+}
 
-  parseDate(s) {
-    if (!s) {
+export function parseDateMDY(s) {
+  if (!s) {
+    return null;
+  } else {
+    let dateMatch = s.trim().match(/^([0-9]{2})-([0-9]{2})-([0-9]{2,4})$/)
+
+    if (!dateMatch) {
       return null;
-    } else {
-      let dateMatch = s.match(/^([0-9]{4})-([0-9]{2})-([0-9]{2}) /)
-
-      if (!dateMatch) {
-        return null;
-      }
-
-      return new Date(
-        parseInt(match[1]),
-        parseInt(match[2]) - 1,
-        parseInt(match[3])
-      )
     }
+
+    const yearInt = parseInt(match[3])
+    const year = yearInt < 100 ? 2000 + yearInt : yearInt
+
+    return new Date(Date.UTC(
+      year,
+      parseInt(match[2]) - 1,
+      parseInt(match[1])
+    ))
   }
-};
+}

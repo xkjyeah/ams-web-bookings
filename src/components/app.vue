@@ -30,7 +30,7 @@
     <loading-overlay v-show="isLoading">
     </loading-overlay>
     <error-overlay
-      v-show="errorMessage"
+      v-if="errorMessage && errorType"
       :title="errorMessage"
       @cancel="setErrorMessage($event)"
       :type="errorType">

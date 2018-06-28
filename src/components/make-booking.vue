@@ -5,164 +5,140 @@
 
     <h1>AMS Transport Booking Form</h1>
 
-    <!-- <el-form :rules="formRules" :model="request" ref="formRules"> -->
+    <v-form v-model="isFormValid">
       <section>
-        <v-text-field :type="email" label="Email (log out to change)"
+        <v-text-field type="email" label="Email (log out to change)"
           :value="user.email" :disabled="true" />
 
-        <el-form-item prop="pickupDate" label="Pickup Date">
-          <el-date-picker v-model="request.pickupDate"
-            format="dd MMM yyyy"
-            type="date" />
-        </el-form-item>
-        <el-form-item prop="pickupTime" label="Pickup Time 24-hour time (00:00 for midnight, 12:00 for noon)">
-          <el-time-picker v-model="request.pickupTime"
-            :picker-options="{
-              selectableRange: '00:00:00 - 23:59:00'
-            }"
-            format="HH:mm"
-            />
-        </el-form-item>
-
-        <el-form-item prop="appointmentTime" label="Appointment time at clinic/hospital (if applicable)">
-          <el-time-picker format="HH:mm" v-model="request.appointmentTime"
+        <MyDatePicker label="Pickup Date" v-model="request.pickupDate"
+          :rules="[rules.required]" />
+        <MyTimePicker
+          label="Pickup Time 24-hour time (00:00 for midnight, 12:00 for noon)"
+          placeholder="13:30"
+          v-model="request.pickupTime"
+          :rules="[rules.required]"
           />
-        </el-form-item>
+        <MyTimePicker
+          label="Appointment time at clinic/hospital (if applicable)"
+          placeholder="14:00"
+          v-model="request.appointmentTime"
+          />
 
+        <v-text-field label="Pickup location"
+          v-model="request.pickupLocation"
+          placeholder="e.g. Singapore General Hospital"
+          :rules="[rules.required]"
+          />
 
-        <el-form-item prop="pickupLocation" label="Pickup location">
-          <el-input type="text"
-            class="form-control"
-            v-model="request.pickupLocation"
-            placeholder="e.g. Singapore General Hospital"/>
-        </el-form-item>
         <div>(Address, level / unit number, ward and bed number)</div>
 
-        <el-form-item prop="dropoffLocation" label="Destination location">
-          <el-input type="text"
-            class="form-control"
-            v-model="request.dropoffLocation"
-            placeholder="e.g. XYZ Nursing Home"/>
-        </el-form-item>
+        <v-text-field label="Destination location"
+          type="text"
+          v-model="request.dropoffLocation"
+          placeholder="e.g. XYZ Nursing Home"
+          :rules="[rules.required]"
+          />
         <div>(Address, level / unit number, ward and bed number)</div>
 
-        <el-form-item prop="twoWay" label="Return trip required?">
-          <el-switch on-text="Yes, two-way"
-            off-text="No, just one-way"
-            :width="150"
-            :value="request.twoWay == '2-way'"
-            @input="request.twoWay = $event ? '2-way' : '-'"
+        <v-radio-group v-model="request.twoWay"
+          label="Is a return trip required? (same day only)">
+          <v-radio
+            label="Yes, return trip on the same day"
+            value="2-way"
             />
-        </el-form-item>
+          <v-radio
+            label="No, one way only"
+            value="-"
+            />
+        </v-radio-group>
       </section>
 
       <section>
         <h2>Patient Particulars</h2>
-        <el-form-item prop="patientName" label="Patient Name">
-          <el-input type="text"
-            class="form-control"
-            v-model="request.patientName"
-            placeholder="e.g. Alexander Fleming"/>
-        </el-form-item>
-        <el-form-item prop="patientNric" label="Patient NRIC">
-          <el-input type="text"
-            class="form-control"
-            v-model="request.patientNric"
-            placeholder="e.g. S00000001A"/>
-        </el-form-item>
+        <v-text-field
+          label="Patient Name"
+          type="text"
+          v-model="request.patientName"
+          placeholder="e.g. Alexander Fleming"
+          :rules="[rules.required]"
+          />
+        <v-text-field
+          label="Patient NRIC (last 4 digits + letter)"
+          type="text"
+          v-model="request.patientNric"
+          placeholder="e.g. 1234X"/>
 
-        <el-form-item prop="patientGender" label="Patient Gender">
-          <el-radio-group v-model="request.patientGender">
-            <el-radio-button label="Male">
-              Male
-            </el-radio-button>
-            <el-radio-button label="Female">
-              Female
-            </el-radio-button>
-          </el-radio-group>
-        </el-form-item>
+        <v-radio-group label="Patient Gender" v-model="request.patientGender">
+          <v-radio label="Male" value="Male" />
+          <v-radio label="Female" value="Female" />
+        </v-radio-group>
 
-        <el-form-item prop="patientWeight" label="Patient's estimated weight">
-          <el-radio-group v-model="request.patientWeight">
-            <el-radio-button label="< 50kg">
-              &lt; 50kg
-            </el-radio-button>
-            <el-radio-button label="70 kg">
-              70 kg
-            </el-radio-button>
-            <el-radio-button label="90 kg">
-              90 kg
-            </el-radio-button>
-            <el-radio-button label=">90 kg">
-              >90 kg
-            </el-radio-button>
-          </el-radio-group>
-        </el-form-item>
+        <v-radio-group label="Patient's estimated weight"
+          v-model="request.patientWeight"
+          :rules="[rules.required]"
+          >
+            <v-radio label="< 50kg" value="< 50 kg" />
+            <v-radio label="70 kg" value="70 kg" />
+            <v-radio label="90 kg" value="90 kg" />
+            <v-radio label=">90 kg" value="> 90kg" />
+        </v-radio-group>
 
-        <el-form-item prop="wheelchairStretcher" label="Stretcher / Wheelchair">
-          <br/>
-          <el-radio v-model="request.wheelchairStretcher" label="-">
-            No stretcher / wheelchair required
-          </el-radio>
-          <br/>
-          <el-radio v-model="request.wheelchairStretcher" label="Stretcher">
-            Stretcher is required
-          </el-radio>
-          <br/>
-          <el-radio v-model="request.wheelchairStretcher" label="OWC">
-            Patient has his own wheelchair
-          </el-radio>
-          <br/>
-          <el-radio v-model="request.wheelchairStretcher" label="Motorized WC">
-            Patient uses <b>motorized</b> wheelchair
-          </el-radio>
-          <br/>
-          <el-radio v-model="request.wheelchairStretcher" label="Ambulance WC">
-            Patient requires a wheelchair from the ambulance company
-          </el-radio>
-        </el-form-item>
+        <v-radio-group prop="wheelchairStretcher"
+          label="Stretcher / Wheelchair"
+          v-model="request.wheelchairStretcher"
+          :rules="[rules.required]">
+          <v-radio value="-"
+            label="No stretcher / wheelchair required" />
+          <v-radio value="Stretcher"
+            label="Stretcher is required" />
+          <v-radio value="OWC"
+            label="Patient has his own wheelchair" />
+          <v-radio value="Motorized WC"
+            label="Patient uses <b>motorized</b> wheelchair" />
+          <v-radio value="Ambulance WC"
+            label="Patient requires a wheelchair from the ambulance company" />
+        </v-radio-group>
 
-        <el-form-item prop="precautions" label="Remarks">
-          <el-input type="textarea" v-model="request.precautions" />
-        </el-form-item>
+        <v-text-field
+          label="Remarks"
+          type="text"
+          multi-line
+          v-model="request.precautions" />
 
-        <el-form-item prop="oxygenRate" label="Oxygen flow rate (if required) (l/min)">
-          <el-input-number v-model="request.oxygenRate" :step="1" :min="0" :max="10"
-          show-stops :show-input="true" />
-        </el-form-item>
+        <v-text-field
+          label="Oxygen flow rate (if required) (l/min)"
+          v-model="request.oxygenRate"
+          :step="1" :min="0" :max="10"
+          type="number"
+          />
       </section>
       <section>
         <h2>Accompanying passengers</h2>
-        <el-form-item prop="accompanyingPassengers" label="Accompanying passengers, if any">
-          <el-input type="text"
-            class="form-control"
-            v-model="request.accompanyingPassengers"
-            placeholder="e.g. mother and sister, 81230000" />
-        </el-form-item>
-        <div>(Name and contact number)</div>
+        <v-text-field
+          label="Name and contact of accompanying passengers, if any"
+          type="text"
+          v-model="request.accompanyingPassengers"
+          placeholder="e.g. mother and sister, 81230000" />
       </section>
       <section>
         <h2>Particulars of requester</h2>
-        <el-form-item prop="contactPerson" label="Your name">
-          <el-input type="text"
-            class="form-control"
-            v-model="request.contactPerson"
-            placeholder="e.g. Staff Nurse Regi" />
-        </el-form-item>
-        <el-form-item prop="contactPhone" label="Contact number">
-          <el-input type="tel"
-            class="form-control"
-            v-model="request.contactPhone"
-            placeholder="e.g. 61112222" />
-        </el-form-item>
+        <v-text-field
+          label="Your name" type="text"
+          v-model="request.contactPerson"
+          placeholder="e.g. Staff Nurse Regi" />
+        <v-text-field
+          label="Contact number"
+          type="tel"
+          v-model="request.contactPhone"
+          placeholder="e.g. 61112222" />
       </section>
 
-      <v-btn type="primary" @click="submit()">Submit!</v-btn>
-    <!-- </el-form> -->
+      <v-btn color="primary" :disabled="!isFormValid" @click="submit()">Submit Booking!</v-btn>
+    </v-form>
   </v-flex>
   <v-flex v-else class="make-booking">
     You must be logged in!
-    <my-login />
+    <MyLogin />
   </v-flex>
 </v-layout>
 </template>
@@ -171,6 +147,10 @@
 import {mapState, mapActions} from 'vuex';
 import Vue from 'vue/dist/vue';
 import leftPad from 'left-pad';
+
+import MyDatePicker from './MyDatePicker.vue'
+import MyTimePicker from './MyTimePicker.vue'
+import MyLogin from './login.vue'
 
 const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');
@@ -200,7 +180,7 @@ function blankRequest() {
   return {
     appointmentTime: null,
     date: null,
-    twoWay: null,
+    twoWay: '-',
     pickupLocation: null,
     dropoffLocation: null,
     destination: null,
@@ -222,29 +202,10 @@ function blankRequest() {
 export default {
   data() {
     return {
-      formRules: {
-        pickupTime: [
-          {required: true}
-        ],
-        pickupDate: [
-          {required: true}
-        ],
-        patientName: [
-          {required: true}
-        ],
-        patientNric: [{required: true}],
-        patientGender: [{required: true}],
-        patientWeight: [{required: true}],
-        wheelchairStretcher: [{required: true}],
-        contactPerson: [{required: true}],
-        contactPhone: [{required: true}],
-        dropoffLocation: [
-          {required: true}
-        ],
-        pickupLocation: [
-          {required: true}
-        ],
+      rules: {
+        required: v => !!v || 'Required'
       },
+      isFormValid: true,
       error: null,
       request: blankRequest(),
     }
@@ -253,17 +214,16 @@ export default {
     ...mapState(['user', 'userData'])
   },
   components: {
-    'myLogin': require('./login.vue'),
+    MyDatePicker,
+    MyLogin,
+    MyTimePicker,
   },
   methods: {
     ...mapActions(['loadingSpinner', 'flashError']),
     submit() {
-      this.$refs.formRules.validate((valid) => {
-        if (valid) {
+      if (this.isFormValid) {
           this.doSubmit();
-        } else {
-        }
-      })
+      }
     },
 
     newBooking() {
@@ -272,8 +232,8 @@ export default {
 
     doSubmit() {
       const pickupTimeParts = [
-        this.request.pickupTime.getHours(),
-        this.request.pickupTime.getMinutes(),
+        this.request.pickupTime.getUTCHours(),
+        this.request.pickupTime.getUTCMinutes(),
         0
       ]
       const now = new Date()
@@ -282,9 +242,9 @@ export default {
         ...this.request,
         pickupDate: null,
         pickupTime: [
-          leftPad(this.request.pickupDate.getFullYear(), 4, '0'),
-          leftPad(this.request.pickupDate.getMonth() + 1, 2, '0'),
-          leftPad(this.request.pickupDate.getDate(), 2, '0'),
+          leftPad(this.request.pickupDate.getUTCFullYear(), 4, '0'),
+          leftPad(this.request.pickupDate.getUTCMonth() + 1, 2, '0'),
+          leftPad(this.request.pickupDate.getUTCDate(), 2, '0'),
         ].join('-') + ' ' + pickupTimeParts.map(x => leftPad(x, 2, '0')).join(':'),
 
         createdAt: [
