@@ -20,6 +20,7 @@
   "license": "ISC",
   "dependencies": {
     "@mdi/font": "^2.4.85",
+    "axios": "^0.18.0",
     "babel-cli": "^6.24.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",

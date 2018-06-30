@@ -24,18 +24,30 @@
           v-model="request.appointmentTime"
           />
 
-        <v-text-field label="Pickup location"
+        <PostcodeAddress
+          label="Singapore Postcode"
+          @address-found="request.pickupLocation = `${$event}\n`"
+          :prefilledAddresses="prefilledAddresses"
+          />
+
+        <v-text-field label="Pickup location (please include Unit No / Ward No / Bed No)"
           v-model="request.pickupLocation"
           placeholder="e.g. Singapore General Hospital"
+          multi-line
           :rules="[rules.required]"
           />
 
-        <div>(Address, level / unit number, ward and bed number)</div>
+        <PostcodeAddress
+          label="Singapore Postcode"
+          @address-found="request.dropoffLocation = `${$event}\n`"
+          :prefilledAddresses="prefilledAddresses"
+          />
 
-        <v-text-field label="Destination location"
+        <v-text-field label="Destination location (please include Unit No / Ward No / Bed No)"
           type="text"
           v-model="request.dropoffLocation"
           placeholder="e.g. XYZ Nursing Home"
+          multi-line
           :rules="[rules.required]"
           />
         <div>(Address, level / unit number, ward and bed number)</div>
@@ -94,7 +106,7 @@
           <v-radio value="OWC"
             label="Patient has his own wheelchair" />
           <v-radio value="Motorized WC"
-            label="Patient uses <b>motorized</b> wheelchair" />
+            label="Patient uses motorized wheelchair" />
           <v-radio value="Ambulance WC"
             label="Patient requires a wheelchair from the ambulance company" />
         </v-radio-group>
@@ -152,6 +164,7 @@ import leftPad from 'left-pad';
 import MyDatePicker from './MyDatePicker.vue'
 import MyTimePicker from './MyTimePicker.vue'
 import MyLogin from './login.vue'
+import PostcodeAddress from './PostcodeAddress.vue'
 
 const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');
@@ -176,6 +189,17 @@ function timeToString (time) {
     time.getUTCMinutes(),
   ].map(x => leftPad(x, 2, '0')).join(':')
 }
+
+const PREFILLED_ADDRESSES = [
+  {short: 'CGH', full: 'CGH'},
+  {short: 'NUH', full: 'NUH'},
+  {short: 'KTPH', full: 'KTPH'},
+  {short: 'NTFH', full: 'NTFH'},
+  {short: 'SGH', full: 'SGH'},
+  {short: 'TTSH', full: 'TTSH'},
+  {short: 'OVNH', full: 'OVNH\nBranch: ?\nWd ? Bed ?'},
+  {short: 'Kwong Wai Shiu', full: 'KWS\nBranch: ?\nWd ? Bed ?'},
+]
 
 function blankRequest() {
   // Debugging only
@@ -232,12 +256,14 @@ export default {
     }
   },
   computed: {
-    ...mapState(['user', 'userData'])
+    ...mapState(['user', 'userData']),
+    prefilledAddresses: () => PREFILLED_ADDRESSES
   },
   components: {
     MyDatePicker,
     MyLogin,
     MyTimePicker,
+    PostcodeAddress,
   },
   methods: {
     ...mapActions(['loadingSpinner', 'flashError']),
