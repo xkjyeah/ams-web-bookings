@@ -14,13 +14,13 @@
           :rules="[rules.required]" />
         <MyTimePicker
           label="Pickup Time 24-hour time (00:00 for midnight, 12:00 for noon)"
-          placeholder="13:30"
+          placeholder="e.g. 13:30"
           v-model="request.pickupTime"
           :rules="[rules.required]"
           />
         <MyTimePicker
           label="Appointment time at clinic/hospital (if applicable)"
-          placeholder="14:00"
+          placeholder="e.g. 14:00"
           v-model="request.appointmentTime"
           />
 
@@ -91,7 +91,7 @@
           v-model="request.patientWeight"
           :rules="[rules.required]"
           >
-            <v-radio label="< 50kg" value="< 50 kg" />
+            <v-radio label="< 70kg" value="< 70 kg" />
             <v-radio label="70 kg" value="70 kg" />
             <v-radio label="90 kg" value="90 kg" />
             <v-radio label=">90 kg" value="> 90kg" />

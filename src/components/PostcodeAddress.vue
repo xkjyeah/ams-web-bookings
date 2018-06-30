@@ -1,18 +1,48 @@
 <template>
-  <v-layout row wrap>
-    <v-flex sm4>
-      <v-text-field v-model="postcode" :label="label" type="tel" />
-    </v-flex>
-    <v-flex sm8>
-      <v-btn
-        small
-        style="text-transform: none"
-        v-for="(prefilled, index) in prefilledAddresses" :key="index"
-        @click="$emit('address-found', prefilled.full)">
-        {{prefilled.short}}
-      </v-btn>
-    </v-flex>
-  </v-layout>
+<div>
+  <v-fade-transition>
+    <v-layout row wrap>
+      <v-flex sm8>
+        <h4>Common destinations:</h4>
+        <v-btn
+          small
+          style="text-transform: none"
+          v-for="(prefilled, index) in prefilledAddresses" :key="index"
+          :color="clicked === prefilled ? 'primary' : ''"
+          @click="$emit('address-found', prefilled.full), clicked=prefilled, postcodeShown = false">
+          {{prefilled.short}}
+        </v-btn>
+
+        <v-btn
+          small
+          style="text-transform: none"
+          :color="postcodeShown ? 'primary' : ''"
+          @click="showPostcode()">
+          Other
+        </v-btn>
+        <v-fade-transition>
+          <v-text-field v-if="postcodeShown" ref="postcode" v-model="postcode" :label="label" />
+        </v-fade-transition>
+      </v-flex>
+    </v-layout>
+  </v-fade-transition>
+  <!-- <v-fade-transition>
+    <v-layout row wrap v-if="postcodeShown">
+      <v-flex>
+        <v-btn
+          small
+          style="text-transform: none"
+          @click="postcodeShown = false"
+          color="primary">
+          Other
+        </v-btn>
+      </v-flex>
+      <v-flex>
+        <v-text-field ref="postcode" v-model="postcode" :label="label" />
+      </v-flex>
+    </v-layout>
+  </v-fade-transition> -->
+</div>
 </template>
 
 <script>
@@ -37,6 +67,8 @@ export default {
   data () {
     return {
       postcode: '',
+      postcodeShown: false,
+      clicked: null,
     }
   },
   watch: {
@@ -57,6 +89,15 @@ export default {
             }
           })
       }
+    }
+  },
+  methods: {
+    showPostcode () {
+      this.postcodeShown = true
+      this.clicked = false
+      this.$nextTick(() => {
+        this.$refs.postcode.$el.querySelector('input').focus()
+      })
     }
   }
 }

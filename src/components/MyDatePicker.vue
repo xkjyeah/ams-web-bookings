@@ -9,7 +9,7 @@
   >
   <v-text-field
     slot="activator"
-    hint="MM/DD/YYYY"
+    hint="DD/MM/YYYY"
     persistent-hint
     prepend-icon="event"
     v-on="$listenersWithoutInput"

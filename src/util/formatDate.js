@@ -13,7 +13,7 @@ export function parseDateMDY(s) {
   if (!s) {
     return null;
   } else {
-    let dateMatch = s.trim().match(/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{2,4})$/)
+    let dateMatch = s.trim().match(/^([0-9]{1,2})[.-\/]([0-9]{1,2})[.-\/]([0-9]{2,4})$/)
 
     if (!dateMatch) {
       return null;

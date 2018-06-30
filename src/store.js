@@ -1,9 +1,8 @@
-const Vue = require('vue');
-const VueX = require('vuex').default;
-const _ = require('lodash');
-const {fbAuth, fbDB, fbStorage, fbSignIn, fbSignOut} = require('./firebase');
-const assert = require('assert');
-const {formatDate, parseDate} = require('./util/formatDate');
+import Vue from 'vue'
+import VueX from 'vuex'
+import _ from 'lodash'
+import {fbAuth, fbDB, fbStorage, fbSignIn, fbSignOut} from './firebase'
+import assert from 'assert'
 
 Vue.use(VueX);
 
