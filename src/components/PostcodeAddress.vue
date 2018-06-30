@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap>
     <v-flex sm4>
-      <v-text-field v-model="postcode" :label="label" />
+      <v-text-field v-model="postcode" :label="label" type="tel" />
     </v-flex>
     <v-flex sm8>
       <v-btn

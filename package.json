@@ -11,7 +11,7 @@
     "build": "npm run build-webpack && npm run heroku-postbuild",
     "http": "http-server -c-1 www",
     "build-webpack": "webpack",
-    "deploy": "npm run build && gh-pages -d www",
+    "deploy": "NODE_ENV=production npm run build && gh-pages -d www",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "babel --out-file server.transpiled.js server.js",
     "start": "node server.transpiled.js"

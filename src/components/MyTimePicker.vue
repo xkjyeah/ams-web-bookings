@@ -3,9 +3,9 @@
     v-bind="$attrs"
     v-on="$listenersWithoutInput"
     type="tel"
-    :value="timeFormatted"
+    v-model="buffer"
     :rules="(rules || []).concat(t => checkInput(t) !== null || 'Invalid time')"
-    @change="$emit('input', checkInput($event))"
+    @blur="$emit('input', checkInput(buffer)), buffer=formatTime(checkInput(buffer))"
     />
 </template>
 
@@ -29,6 +29,14 @@ export default {
         leftPad(this.value.getUTCHours(), 2, '0'),
         leftPad(this.value.getUTCMinutes(), 2, '0'),
       ].join(':')
+    },
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler (v) {
+        this.buffer = this.formatTime(v)
+      }
     }
   },
   methods: {
@@ -46,6 +54,12 @@ export default {
       } catch (err) {
         return null
       }
+    },
+    formatTime (v) {
+      return v && [
+        leftPad(v.getUTCHours(), 2, '0'),
+        leftPad(v.getUTCMinutes(), 2, '0'),
+      ].join(':')
     }
   }
 }
