@@ -1,23 +1,6 @@
 <template>
 <div v-if="user">
-  <v-layout align-content-start align-start row wrap>
-    <v-flex sm2>
-      <v-radio-group v-model="filter.filterField" label="Search by:">
-        <v-radio value="Request Date" label="Request Date" />
-        <v-radio value="Pick-up Date" label="Pick-up Date" />
-      </v-radio-group>
-    </v-flex>
-    <v-flex sm2>
-      <v-radio-group v-model="filter.futureOnly" label="Date range:">
-        <v-radio :value="true" label="Today and future"/>
-        <v-radio :value="false" label="Custom date range"/>
-      </v-radio-group>
-    </v-flex>
-    <v-flex sm4>
-      <my-calendar v-model="filter.dates" :disabled="filter.futureOnly"/>
-    </v-flex>
-    <v-spacer />
-  </v-layout>
+  <BookingsFilter v-model="filter" />
 
   <table class="table" v-if="bookings">
     <thead>
@@ -78,7 +61,7 @@ const {fbDB} = require('../firebase');
 const _ = require('lodash');
 const dateformat = require('../util/dateformat');
 
-import MyCalendar from './MyCalendar.vue'
+import BookingsFilter from './BookingsFilter.vue'
 import MyLogin from './login.vue'
 import BookingRecordAdmin from './BookingRecordAdmin.vue'
 
@@ -151,7 +134,7 @@ export default {
   },
   components: {
     BookingRecordAdmin,
-    MyCalendar,
+    BookingsFilter,
     MyLogin,
   },
   methods: {

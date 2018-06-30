@@ -48,6 +48,7 @@
 </style>
 <script>
 import {mapState, mapActions} from 'vuex';
+import _ from 'lodash'
 const {fbSignInGoogle, fbSignInPassword, fbSignUpPassword,
        fbResetPassword} = require('../firebase.js')
 
@@ -77,29 +78,40 @@ export default {
     ...mapActions(['flashError']),
     loginGoogle() {
       fbSignInGoogle()
-      .catch((err) => this.flashError({
-        ...err,
-        type: 'error'
-      }));
+      .catch((err) => {
+        this.flashError({
+          ...err,
+          message: _.get(err, 'message'),
+          type: 'error'
+        })
+      });
     },
     loginPassword() {
       fbSignInPassword(this.email, this.password)
-      .catch((err) => this.flashError({
-        ...err,
-        type: 'error'
-      }));
+      .catch((err) => {
+        console.log(err)
+        this.flashError({
+          ...err,
+          message: _.get(err, 'message', 'Unknown error'),
+          type: 'error'
+        })
+      });
     },
     signupPassword() {
       fbSignUpPassword(this.email, this.password)
-      .then((auth) => auth.user.sendEmailVerification())
+      .then((auth) => auth.sendEmailVerification())
       .then(() => this.flashError({
         message: 'Sign up successful!',
         type: 'success',
       }))
-      .catch((err) => this.flashError({
-        ...err,
-        type: 'error'
-      }));
+      .catch((err) => {
+        console.log(err)
+        this.flashError({
+          ...err,
+          message: _.get(err, 'message', 'Unknown error'),
+          type: 'error'
+        })
+      });
     },
     resetPassword() {
       fbResetPassword(this.email, this.password)

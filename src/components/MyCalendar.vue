@@ -1,17 +1,19 @@
 <template>
 <table class="calendar" :class="{disabled: disabled}">
-  <caption>
-    <v-btn icon @click="addMonth(-1)">
-      <v-icon>chevron_left</v-icon>
-    </v-btn>
-    {{dateformat(monthDate, 'mmmm')}}
-    <v-btn icon @click="addMonth(1)">
-      <v-icon>chevron_right</v-icon>
-    </v-btn>
-  </caption>
   <thead>
     <tr>
-      <th v-for="t in 7">{{days[t - 1]}}</th>
+      <th colspan="7">
+        <v-btn icon @click="addMonth(-1)">
+          <v-icon>chevron_left</v-icon>
+        </v-btn>
+        {{dateformat(monthDate, 'mmmm')}}
+        <v-btn icon @click="addMonth(1)">
+          <v-icon>chevron_right</v-icon>
+        </v-btn>
+      </th>
+    </tr>
+    <tr>
+      <th v-for="(t, index) in 7" :key="index">{{days[t - 1]}}</th>
     </tr>
   </thead>
   <tbody>
