@@ -24,6 +24,7 @@
           v-model="request.appointmentTime"
           />
 
+        <h3>Pickup Location</h3>
         <PostcodeAddress
           label="Singapore Postcode"
           @address-found="request.pickupLocation = `${$event}\n`"
@@ -37,6 +38,7 @@
           :rules="[rules.required]"
           />
 
+        <h3>Dropoff Location</h3>
         <PostcodeAddress
           label="Singapore Postcode"
           @address-found="request.dropoffLocation = `${$event}\n`"
