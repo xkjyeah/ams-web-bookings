@@ -21,7 +21,8 @@
           Other
         </v-btn>
         <v-fade-transition>
-          <v-text-field v-if="postcodeShown" ref="postcode" v-model="postcode" :label="label" />
+          <v-text-field v-if="postcodeShown" ref="postcode" v-model="postcode" :label="label"
+            placeholder="(Optional)" />
         </v-fade-transition>
       </v-flex>
     </v-layout>
