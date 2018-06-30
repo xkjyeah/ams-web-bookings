@@ -1,14 +1,7 @@
 <template>
-  <v-dialog :value="title" @input="$emit('cancel', $event)" max-width="400px">
-    <v-card>
-      <v-card-title>
-        <v-alert :type="type" :value="true">{{title}}</v-alert>
-      </v-card-title>
-      <v-card-actions>
-        <v-btn color="primary" @click.stop="$emit('cancel', false)">Close</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+<div class="error-overlay">
+  <v-alert :type="type" :value="true">{{title}}</v-alert>
+</div>
 </template>
 <script>
 export default {
@@ -20,3 +13,11 @@ export default {
   },
 }
 </script>
+<style scoped>
+.error-overlay {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+}
+</style>

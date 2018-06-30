@@ -297,13 +297,13 @@ export default {
       )
       .then(() => {
         this.request = null;
-        return this.flashError({
+        this.flashError({
           message: 'Request received!',
           type: 'success'
         })
-        .then(() => {
+        setTimeout(() => {
           this.$router.push('/history')
-        })
+        }, 1000)
       })
       .catch((err) => {
         return this.flashError({

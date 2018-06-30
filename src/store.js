@@ -77,7 +77,7 @@ const store = new VueX.Store({
         setTimeout(() => {
           context.commit('setErrorMessage', null)
           resolve()
-        }, 3000)
+        }, 5000)
       })
     },
   },
