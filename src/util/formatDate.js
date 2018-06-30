@@ -13,19 +13,19 @@ export function parseDateMDY(s) {
   if (!s) {
     return null;
   } else {
-    let dateMatch = s.trim().match(/^([0-9]{2})-([0-9]{2})-([0-9]{2,4})$/)
+    let dateMatch = s.trim().match(/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{2,4})$/)
 
     if (!dateMatch) {
       return null;
     }
 
-    const yearInt = parseInt(match[3])
+    const yearInt = parseInt(dateMatch[3])
     const year = yearInt < 100 ? 2000 + yearInt : yearInt
 
     return new Date(Date.UTC(
       year,
-      parseInt(match[2]) - 1,
-      parseInt(match[1])
+      parseInt(dateMatch[2]) - 1,
+      parseInt(dateMatch[1])
     ))
   }
 }

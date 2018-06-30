@@ -73,7 +73,12 @@ const store = new VueX.Store({
     },
     flashError(context, message) {
       context.commit('setErrorMessage', message)
-      setTimeout(() => context.commit('setErrorMessage', null), 10000)
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          context.commit('setErrorMessage', null)
+          resolve()
+        }, 3000)
+      })
     },
   },
   getters: {

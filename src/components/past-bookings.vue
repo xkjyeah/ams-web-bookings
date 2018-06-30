@@ -1,19 +1,23 @@
 <template>
 <div>
-  <el-form class="filter-area">
-    <div class="options">
-      <el-radio label="Request Date" v-model="filter.filterField" />
-      <br/>
-      <el-radio label="Pick-up Date" v-model="filter.filterField" />
-      <br/>
-      <el-checkbox v-model="filter.futureOnly" label="Today and future"/>
-    </div>
-    <div class="calendar">
-      <!-- <el-date-picker v-model="filter.dates" type="daterange" placeholder="Filter dates"
-        :disabled="filter.futureOnly" /> -->
+  <v-layout align-content-start align-start row wrap>
+    <v-flex sm2>
+      <v-radio-group v-model="filter.filterField" label="Search by:">
+        <v-radio value="Request Date" label="Request Date" />
+        <v-radio value="Pick-up Date" label="Pick-up Date" />
+      </v-radio-group>
+    </v-flex>
+    <v-flex sm2>
+      <v-radio-group v-model="filter.futureOnly" label="Date range:">
+        <v-radio :value="true" label="Today and future"/>
+        <v-radio :value="false" label="Custom date range"/>
+      </v-radio-group>
+    </v-flex>
+    <v-flex sm4>
       <my-calendar v-model="filter.dates" :disabled="filter.futureOnly"/>
-    </div>
-  </el-form>
+    </v-flex>
+    <v-spacer />
+  </v-layout>
 
   <table class="table" v-if="bookings">
     <thead>
@@ -63,6 +67,9 @@
 import {mapState, mapActions} from 'vuex';
 import Vue from 'vue/dist/vue';
 import leftPad from 'left-pad';
+
+import MyCalendar from './MyCalendar.vue'
+import BookingRecordUser from './BookingRecordUser.vue'
 
 const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');
@@ -139,9 +146,8 @@ export default {
     }
   },
   components: {
-    'myLogin': require('./login.vue'),
-    'bookingRecordUser': require('./booking-record-user.vue'),
-    'myCalendar': require('./calendar.vue')
+    BookingRecordUser,
+    MyCalendar,
   },
   methods: {
     ...mapActions(['loadingSpinner', 'flashError']),
@@ -172,9 +178,3 @@ export default {
 }
 
 </script>
-
-<style lang="scss">
-.calendar {
-  float: right;
-}
-</style>

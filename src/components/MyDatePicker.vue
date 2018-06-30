@@ -14,7 +14,8 @@
     prepend-icon="event"
     v-on="$listenersWithoutInput"
     v-bind="$attrs"
-    @change="$emit('input', parseDate(dateFormatted))"
+    @change="$emit('input', parseDate($event))"
+    :rules="(rules || []).concat(t => parseDate(t) !== null || 'Invalid date')"
     :value="dateFormatted"
   ></v-text-field>
   <v-date-picker :value="formatDateYMD(value)" @input="$emit('input', new Date($event))"
@@ -28,7 +29,7 @@ import leftPad from 'left-pad'
 import _ from 'lodash'
 
 export default {
-  props: ['value'],
+  props: ['value', 'rules'],
   data () {
     return {
       menuOpened: false,
@@ -51,7 +52,9 @@ export default {
     }
   },
   methods: {
-    parseDate: x => x ? parseDate(x) : null,
+    parseDate (x) {
+      return parseDateMDY(x)
+    },
     formatDateYMD: x => x ? formatDateYMD(x) : null,
   }
 }

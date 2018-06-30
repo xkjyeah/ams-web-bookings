@@ -1,19 +1,23 @@
 <template>
 <div v-if="user">
-  <el-form class="filter-area">
-    <div class="options">
-      <el-radio label="Request Date" v-model="filter.filterField" />
-      <br/>
-      <el-radio label="Pick-up Date" v-model="filter.filterField" />
-      <br/>
-      <el-checkbox v-model="filter.futureOnly" label="Today and future"/>
-    </div>
-    <div class="calendar">
-      <!-- <el-date-picker v-model="filter.dates" type="daterange" placeholder="Filter dates"
-        :disabled="filter.futureOnly" /> -->
+  <v-layout align-content-start align-start row wrap>
+    <v-flex sm2>
+      <v-radio-group v-model="filter.filterField" label="Search by:">
+        <v-radio value="Request Date" label="Request Date" />
+        <v-radio value="Pick-up Date" label="Pick-up Date" />
+      </v-radio-group>
+    </v-flex>
+    <v-flex sm2>
+      <v-radio-group v-model="filter.futureOnly" label="Date range:">
+        <v-radio :value="true" label="Today and future"/>
+        <v-radio :value="false" label="Custom date range"/>
+      </v-radio-group>
+    </v-flex>
+    <v-flex sm4>
       <my-calendar v-model="filter.dates" :disabled="filter.futureOnly"/>
-    </div>
-  </el-form>
+    </v-flex>
+    <v-spacer />
+  </v-layout>
 
   <table class="table" v-if="bookings">
     <thead>
@@ -35,9 +39,9 @@
   </table>
   <i class="el-icon-loading" v-else />
 </div>
-<div v-else>
+<v-layout v-else>
   <my-login />
-</div>
+</v-layout>
 </template>
 <style lang="scss" scoped>
 .filter-area {
@@ -73,6 +77,10 @@ const querystring = require('querystring');
 const {fbDB} = require('../firebase');
 const _ = require('lodash');
 const dateformat = require('../util/dateformat');
+
+import MyCalendar from './MyCalendar.vue'
+import MyLogin from './login.vue'
+import BookingRecordAdmin from './BookingRecordAdmin.vue'
 
 export default {
   data() {
@@ -142,9 +150,9 @@ export default {
     }
   },
   components: {
-    'myLogin': require('./login.vue'),
-    'bookingRecordAdmin': require('./booking-record-admin.vue'),
-    'myCalendar': require('./calendar.vue')
+    BookingRecordAdmin,
+    MyCalendar,
+    MyLogin,
   },
   methods: {
     ...mapActions(['loadingSpinner', 'flashError']),
@@ -169,9 +177,3 @@ export default {
 }
 
 </script>
-
-<style lang="scss">
-.calendar {
-  float: right;
-}
-</style>

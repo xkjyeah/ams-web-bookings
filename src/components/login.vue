@@ -2,7 +2,12 @@
   <div class="login">
     <div v-if="!user">
       <h3>Login with Google</h3>
-      <v-btn @click="loginGoogle" type="primary">Login with Google</v-btn>
+      <p>(This is the easiest and fastest. We will only receive your email address.)</p>
+      <v-btn @click="loginGoogle" color="primary">Login with Google</v-btn>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
 
       <h3>Login with Email/Password</h3>
       <v-radio-group v-model="mode">

@@ -125,7 +125,8 @@
         <v-text-field
           label="Your name" type="text"
           v-model="request.contactPerson"
-          placeholder="e.g. Staff Nurse Regi" />
+          placeholder="e.g. Staff Nurse Regi"
+          :rules="[rules.required]" />
         <v-text-field
           label="Contact number"
           type="tel"
@@ -155,6 +156,26 @@ import MyLogin from './login.vue'
 const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');
 const {fbDB} = require('../firebase');
+
+function mergeDatesToString (date, time) {
+  const timeParts = [
+    time.getUTCHours(),
+    time.getUTCMinutes(),
+    0
+  ]
+  return [
+    leftPad(date.getUTCFullYear(), 4, '0'),
+    leftPad(date.getUTCMonth() + 1, 2, '0'),
+    leftPad(date.getUTCDate(), 2, '0'),
+  ].join('-') + ' ' + timeParts.map(x => leftPad(x, 2, '0')).join(':')
+}
+
+function timeToString (time) {
+  return [
+    time.getUTCHours(),
+    time.getUTCMinutes(),
+  ].map(x => leftPad(x, 2, '0')).join(':')
+}
 
 function blankRequest() {
   // Debugging only
@@ -241,11 +262,14 @@ export default {
       const data = {
         ...this.request,
         pickupDate: null,
-        pickupTime: [
-          leftPad(this.request.pickupDate.getUTCFullYear(), 4, '0'),
-          leftPad(this.request.pickupDate.getUTCMonth() + 1, 2, '0'),
-          leftPad(this.request.pickupDate.getUTCDate(), 2, '0'),
-        ].join('-') + ' ' + pickupTimeParts.map(x => leftPad(x, 2, '0')).join(':'),
+        pickupTime: mergeDatesToString(
+          this.request.pickupDate,
+          this.request.pickupTime
+        ),
+
+        appointmentTime: timeToString(
+          this.request.appointmentTime
+        ),
 
         createdAt: [
           leftPad(now.getFullYear(), 4, '0'),
@@ -273,13 +297,16 @@ export default {
       )
       .then(() => {
         this.request = null;
-        this.flashError({
+        return this.flashError({
           message: 'Request received!',
           type: 'success'
         })
+        .then(() => {
+          this.$router.push('/history')
+        })
       })
       .catch((err) => {
-        this.flashError({
+        return this.flashError({
           ...err,
           type: 'error'
         })

@@ -4,7 +4,7 @@
     v-on="$listenersWithoutInput"
     type="tel"
     :value="timeFormatted"
-    :validate-on-blur="true"
+    :rules="(rules || []).concat(t => checkInput(t) !== null || 'Invalid time')"
     @change="$emit('input', checkInput($event))"
     />
 </template>
@@ -16,7 +16,7 @@ import assert from 'assert'
 import _ from 'lodash'
 
 export default {
-  props: ['value'],
+  props: ['value', 'rules'],
   data() {
     return {buffer: null};
   },
