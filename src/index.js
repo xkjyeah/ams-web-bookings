@@ -1,4 +1,4 @@
-import Vue from 'vue/dist/vue'
+import Vue from 'vue'
 const VueRouter = require('vue-router').default;
 const VueX = require('vuex');
 const VeeValidate = require('vee-validate');

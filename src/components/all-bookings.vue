@@ -69,7 +69,7 @@
 </style>
 <script>
 import {mapState, mapActions} from 'vuex';
-import Vue from 'vue/dist/vue';
+import Vue from 'vue';
 import leftPad from 'left-pad';
 
 const {formatDate, parseDate} = require('../util/formatDate');

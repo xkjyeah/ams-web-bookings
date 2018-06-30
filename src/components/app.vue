@@ -45,7 +45,7 @@
 
 <script>
 import {mapState, mapActions, mapMutations} from 'vuex';
-import Vue from 'vue/dist/vue';
+import Vue from 'vue';
 
 const {formatDate, parseDate} = require('../util/formatDate');
 const querystring = require('querystring');

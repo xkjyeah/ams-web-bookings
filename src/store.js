@@ -1,4 +1,4 @@
-const Vue = require('vue/dist/vue');
+const Vue = require('vue');
 const VueX = require('vuex').default;
 const _ = require('lodash');
 const {fbAuth, fbDB, fbStorage, fbSignIn, fbSignOut} = require('./firebase');

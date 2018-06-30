@@ -81,7 +81,7 @@ td {
 </style>
 <script>
 import {mapState, mapActions} from 'vuex';
-import Vue from 'vue/dist/vue';
+import Vue from 'vue';
 import leftPad from 'left-pad';
 const {fbDB} = require('../firebase');
 const _ = require('lodash');
