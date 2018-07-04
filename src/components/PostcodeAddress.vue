@@ -18,7 +18,7 @@
           style="text-transform: none"
           :color="postcodeShown ? 'primary' : ''"
           @click="showPostcode()">
-          Other
+          Other (Postal code)
         </v-btn>
         <v-fade-transition>
           <v-text-field v-if="postcodeShown" ref="postcode" v-model="postcode" :label="label"
