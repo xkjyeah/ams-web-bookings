@@ -166,6 +166,8 @@ export default {
         this.selectedDays = this.selectedDays.slice(2, this.selectedDays.length)
       }
 
+      this.selectedDays = _.sortBy(this.selectedDays, d => d.getTime())
+
       this.$emit('dateClicked', dt);
       this.$emit('input', this.selectedDays);
     },
