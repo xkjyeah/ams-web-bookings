@@ -201,6 +201,7 @@ const PREFILLED_ADDRESSES = [
   {short: 'TTSH', full: 'TTSH'},
   {short: 'OVNH', full: 'OVNH\nBranch: ?\nWd ? Bed ?'},
   {short: 'Kwong Wai Shiu', full: 'KWS\nBranch: ?\nWd ? Bed ?'},
+  {short: 'Econ', full: 'ECON\nBranch: ?\nWd ? Bed ?'},
 ]
 
 function blankRequest() {
