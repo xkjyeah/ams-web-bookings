@@ -18,6 +18,7 @@
 <script>
 import {mapState, mapActions} from 'vuex';
 const {fbDB} = require('../firebase');
+import leftPad from 'left-pad';
 
 import BookingRecord from './BookingRecord.vue'
 
@@ -75,10 +76,23 @@ export default {
         positiveColor: 'red',
         positiveText: 'Delete',
       })) {
-        fbDB.ref(`/bookings/${this.id}`)
+        const now = new Date()
+
+        fbDB.ref()
         .update({
-          cancelled: true,
-          cancelledByUser: true
+          [`/bookings/${this.id}/cancelled`]: true,
+          [`/bookings/${this.id}/cancelledByUser`]: true,
+          [`/cancellations/${this.id}`]: {
+            createdAt: [
+              leftPad(now.getFullYear(), 4, '0'),
+              leftPad(now.getMonth() + 1, 2, '0'),
+              leftPad(now.getDate(), 2, '0'),
+            ].join('-') + ' ' + [
+              leftPad(now.getHours(), 2, '0'),
+              leftPad(now.getMinutes(), 2, '0'),
+              leftPad(now.getSeconds(), 2, '0'),
+            ].join(':'),
+          }
         })
         .catch((err) => {
           this.flashError({
