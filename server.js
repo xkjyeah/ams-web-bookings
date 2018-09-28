@@ -46,7 +46,7 @@ function handleNewCancellation(booking) {
   .then((value) => {
     console.log(value)
     return triggerCancellationWebhook({
-      ...value,
+      ...value.val(),
       id: booking.id,
     })
   })
