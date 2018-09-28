@@ -43,13 +43,12 @@ function handleNewBooking(booking) {
 function handleNewCancellation(booking) {
   db.ref(`/bookings/${booking.id}`)
   .once('value')
-  .then((value) => {
-    console.log(value)
-    return triggerCancellationWebhook({
+  .then((value) =>
+    triggerCancellationWebhook({
       ...value.val(),
       id: booking.id,
     })
-  })
+  )
   .then(() => {
     db.ref(`/cancellations/${booking.id}`)
     .update({
