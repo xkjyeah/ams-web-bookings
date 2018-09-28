@@ -1,13 +1,13 @@
 <template>
   <booking-record v-if="rec" :booking="rec" :now="now">
-    <!-- <v-toolbar flat>
-      <v-btn icon @click="cancel" title="Cancel" v-if="!rec.cancelled">
+    <v-toolbar flat>
+      <v-btn icon @click="cancel" title="Cancel" v-if="!rec.cancelled && !rec.cancelledByUser">
         <v-icon>delete</v-icon>
       </v-btn>
-      <v-btn icon @click="reopen" title="Uncancel" v-else>
+      <!-- <v-btn icon @click="reopen" title="Uncancel">
         <v-icon>restore</v-icon>
-      </v-btn>
-    </v-toolbar> -->
+      </v-btn> -->
+    </v-toolbar>
   </booking-record>
   <tr v-else>
     <td colspan="4">
