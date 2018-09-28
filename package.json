@@ -44,7 +44,6 @@
     "material-design-icons-iconfont": "^3.0.3",
     "node-sass": "^4.9.3",
     "nodemailer": "^3.1.8",
-    "request-promise": "^4.2.0",
     "sass-loader": "^7.0.3",
     "shx": "^0.2.2",
     "style-loader": "^0.13.2",

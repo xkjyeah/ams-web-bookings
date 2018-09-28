@@ -2,7 +2,7 @@ const Hapi = require('hapi')
 const Joi = require('joi')
 const dateformat = require('dateformat');
 const firebase = require('firebase-admin');
-const rp = require('request-promise');
+const axios = require('axios');
 const _ = require('lodash');
 
 const server = new Hapi.Server();
@@ -20,19 +20,11 @@ const app = firebase.initializeApp({
 const db = app.database();
 
 function triggerWebhook(booking) {
-  return rp({
-    uri: process.env.WEBHOOK_URL,
-    json: true,
-    body: booking
-  })
+  return axios.post(process.env.WEBHOOK_URL, booking)
 }
 
 function triggerCancellationWebhook(booking) {
-  return rp({
-    uri: process.env.CANCELLATION_WEBHOOK_URL,
-    json: true,
-    body: booking
-  })
+  return axios.post(process.env.CANCELLATION_WEBHOOK_URL, booking)
 }
 
 function handleNewBooking(booking) {
