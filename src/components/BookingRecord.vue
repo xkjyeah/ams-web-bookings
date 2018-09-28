@@ -1,7 +1,7 @@
 <template>
   <tr :class="{
     'booking-record': true,
-    cancelled: booking.cancelled,
+    cancelled: booking.cancelled || booking.cancelledByUser,
   }">
     <td>
       {{dateformat(booking.pickupTime.substr(0, 10), 'dd mmm yyyy')}}
@@ -51,6 +51,7 @@
       <span v-if="booking.precautions">✓ {{booking.precautions}}<br/></span>
     </td>
     <td>
+      <em v-if="booking.cancelledByUser">(Cancelled by customer)</em><br/>
       <slot>
       </slot>
     </td>

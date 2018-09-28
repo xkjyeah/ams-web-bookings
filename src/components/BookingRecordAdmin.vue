@@ -9,7 +9,7 @@
       <v-btn icon @click="read" title="Mark as read">
         <v-icon>markunread_mailbox</v-icon>
       </v-btn>
-      <v-btn icon @click="cancel" title="Cancel" v-if="!booking.cancelled">
+      <v-btn icon @click="cancel" title="Cancel" v-if="!booking.cancelled && !booking.cancelledByUser">
         <v-icon>delete</v-icon>
       </v-btn>
       <v-btn icon @click="reopen" title="Uncancel" v-else>
