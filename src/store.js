@@ -17,8 +17,13 @@ const store = new VueX.Store({
     trustedEmails: [],
     isTrusted: () => false,
     now: new Date(),
+
+    modal: null,
   },
   mutations: {
+    setModal(state, modal) {
+      state.modal = modal;
+    },
     setNow(state, data) {
       state.now = new Date;
     },

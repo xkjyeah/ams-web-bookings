@@ -40,6 +40,7 @@
     </error-overlay>
     <router-view></router-view>
   </v-content>
+  <ConfirmModal />
 </v-app>
 </template>
 
@@ -52,6 +53,7 @@ const querystring = require('querystring');
 const {fbAuth} = require('../firebase')
 
 import LoadingOverlay from './loading-overlay.vue'
+import ConfirmModal from './ConfirmModal.vue'
 import ErrorOverlay from './error-overlay.vue'
 
 export default {
@@ -62,12 +64,34 @@ export default {
       }
     }
   },
+  mounted () {
+    Vue.prototype.$confirm = (options) => {
+      const promise = new Promise((resolve, reject) => {
+        this.$store.commit('setModal', {
+          title: options.title,
+          message: options.message,
+          positiveColor: 'red',
+          positiveText: options.positiveText || 'OK',
+          negativeText: options.negativeText || 'Cancel',
+          resolve,
+          reject,
+        })
+      })
+
+      const dismiss = () => {
+        this.$store.commit('setModal', null)
+      }
+
+      promise.then(dismiss, dismiss)
+      return promise
+    }
+  },
   computed: {
     ...mapState(['user', 'isLoading', 'errorMessage', 'errorType', 'isAdmin',
       'trustedEmails', 'isTrusted'])
   },
   components: {
-    LoadingOverlay, ErrorOverlay
+    LoadingOverlay, ErrorOverlay, ConfirmModal
   },
   methods: {
     ...mapMutations(['setErrorMessage']),

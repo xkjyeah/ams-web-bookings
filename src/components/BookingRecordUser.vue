@@ -69,22 +69,30 @@ export default {
   },
   methods: {
     ...mapActions(['loadingSpinner', 'flashError']),
-    cancel() {
-      fbDB.ref(`/bookings/${this.id}`)
-      .update({
-        cancelled: true
-      })
-      .catch((err) => {
-        this.flashError({
-          ...err,
-          type: 'error'
+    async cancel() {
+      if (await this.$confirm({
+        title: "Are you sure you want to cancel this booking?",
+        positiveColor: 'red',
+        positiveText: 'Delete',
+      })) {
+        fbDB.ref(`/bookings/${this.id}`)
+        .update({
+          cancelled: true,
+          cancelledByUser: true
         })
-      })
+        .catch((err) => {
+          this.flashError({
+            ...err,
+            type: 'error'
+          })
+        })
+      }
     },
     reopen() {
       fbDB.ref(`/bookings/${this.id}`)
       .update({
-        cancelled: false
+        cancelledByUser: false,
+        cancelled: false,
       })
       .catch((err) => {
         this.flashError({
