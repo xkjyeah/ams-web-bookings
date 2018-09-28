@@ -1,7 +1,7 @@
 <template>
 <v-layout>
   <v-flex v-if="user && user.emailVerified" class="make-booking">
-    <img src="http://www.ambulanceservice.com.sg/images/logo.png" class="logo"/>
+    <img src="https://www.ambulanceservice.com.sg/images/logo.png" class="logo"/>
 
     <h1>AMS Transport Booking Form</h1>
 
