@@ -27,6 +27,14 @@ function triggerWebhook(booking) {
   })
 }
 
+function triggerCancellationWebhook(booking) {
+  return rp({
+    uri: process.env.CANCELLATION_WEBHOOK_URL,
+    json: true,
+    body: booking
+  })
+}
+
 function handleNewBooking(booking) {
   return triggerWebhook(booking)
   .then(() => {
@@ -40,8 +48,28 @@ function handleNewBooking(booking) {
   })
 }
 
+function handleNewCancellation(booking) {
+  db.ref(`/bookings/${booking.id}`)
+  .once('value')
+  .then((value) =>
+    triggerCancellationWebhook({
+      ...value,
+      id: booking.id,
+    })
+  )
+  .then(() => {
+    db.ref(`/cancellations/${booking.id}`)
+    .update({
+      isProcessed: true
+    })
+  })
+  .catch((err) => {
+    console.log(err.stack);
+  })
+}
+
 function poll(when = Date.now()) {
-  return new Promise((resolve, reject) => {
+  const pollNewBookings = new Promise((resolve, reject) => {
     console.log(new Date(when))
     db.ref('/bookings')
       .orderByChild('createdAt')
@@ -62,6 +90,30 @@ function poll(when = Date.now()) {
         resolve(Promise.all(newBookings.map(handleNewBooking)));
       })
   })
+
+  const pollCancellations = new Promise((resolve, reject) => {
+    console.log(new Date(when))
+    db.ref('/cancellations')
+      .orderByChild('createdAt')
+      .startAt(dateformat(new Date(when - 10 * 60000), "yyyy-mm-dd HH:MM"))
+      .endAt(dateformat(new Date(when + 10 * 60000), "yyyy-mm-dd HH:MM"))
+      .once('value', (v) => {
+        const newCancellations = _(v.val())
+          .toPairs()
+          .map(([id, value]) => ({
+            ...value,
+            id
+          }))
+          .filter(v => !v.isProcessed)
+          .value()
+
+        console.log(`There are ${newCancellations.length} new cancellations`)
+
+        resolve(Promise.all(newCancellations.map(handleNewCancellation)));
+      })
+  })
+
+  return Promise.all([pollNewBookings, pollCancellations])
 }
 
 server.route({

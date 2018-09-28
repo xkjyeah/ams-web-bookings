@@ -65,7 +65,7 @@
             root.child('admins')
             .child(auth.token.email.replace('.', '%2e'))
             .val() == 1 ||
-            (auth.token.email == root.child('bookings').child($key).child('contactEmail').val())
+            auth.token.email == root.child('bookings').child($key).child('contactEmail').val())
         ",
         ".indexOn": ["createdAt"]
       }
