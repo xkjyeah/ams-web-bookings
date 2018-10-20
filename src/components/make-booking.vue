@@ -202,6 +202,7 @@ const PREFILLED_ADDRESSES = [
   {short: 'OVNH', full: 'OVNH\nBranch: ?\nWd ? Bed ?'},
   {short: 'Kwong Wai Shiu', full: 'KWS\nBranch: ?\nWd ? Bed ?'},
   {short: 'Ren Ci', full: 'Ren Ci\nBranch: ?\nWd ? Bed ?'},
+  {short: 'BrightVision', full: 'BVH\nWd ? Bed ?'},
   {short: 'Econ', full: 'ECON\nBranch: ?\nWd ? Bed ?'},
 ]
 
