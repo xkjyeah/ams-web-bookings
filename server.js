@@ -1,9 +1,13 @@
+
+require('babel-polyfill')
+
 const Hapi = require('hapi')
 const Joi = require('joi')
 const dateformat = require('dateformat');
 const firebase = require('firebase-admin');
 const axios = require('axios');
 const _ = require('lodash');
+const querystring = require('querystring')
 
 const server = new Hapi.Server();
 server.connection({ port: process.env.PORT || 8999 });
@@ -122,6 +126,56 @@ server.route({
   handler(request, reply) {
     poll(request.params.dateTime.getTime());
     reply('');
+  }
+})
+
+
+server.route({
+  method: 'POST',
+  path: '/enquiry',
+  config: {
+    validate: {
+      payload: {
+        email: Joi.string().email(),
+        message: Joi.string(),
+        name: Joi.string(),
+        organization: Joi.string(),
+        redirect: Joi.string(),
+        redirectFail: Joi.string()
+          .optional()
+          .default('https://www.ambulanceservice.com.sg/contact-error'),
+        service: Joi.string(),
+        telephone: Joi.string(),
+        'g-recaptcha-response': Joi.string(),
+      }
+    },
+  },
+  async handler (request, reply) {
+    try {
+      const verifyCaptchaResponse = await axios({
+        method: 'POST',
+        url: 'https://www.google.com/recaptcha/api/siteverify',
+        data: querystring.stringify({
+          secret: process.env.RECAPTCHA_SECRET,
+          response: request.payload['g-recaptcha-response']
+        }),
+        headers: {
+          'Content-type': 'application/x-www-form-urlencoded'
+        }
+      })
+      if (verifyCaptchaResponse.data.success !== true) {
+        console.log(verifyCaptchaResponse.data)
+        return reply('Captcha not verified').code(400)
+      }
+      await axios.post(process.env.ENQUIRY_WEBHOOK_URL, _.omit(request.payload, ['g-recaptcha-response']))
+
+      reply()
+        .redirect(request.payload.redirect)
+    } catch (e) {
+      console.log(e)
+      reply('Internal Error')
+        .redirect(request.payload.redirectFail)
+    }
   }
 })
 
