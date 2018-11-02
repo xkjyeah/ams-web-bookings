@@ -137,15 +137,15 @@ server.route({
     validate: {
       payload: {
         email: Joi.string().email(),
-        message: Joi.string(),
+        message: Joi.string().allow(''),
         name: Joi.string(),
-        organization: Joi.string(),
+        organization: Joi.string().allow(''),
         redirect: Joi.string(),
         redirectFail: Joi.string()
           .optional()
           .default('https://www.ambulanceservice.com.sg/contact-error'),
         service: Joi.string(),
-        telephone: Joi.string(),
+        telephone: Joi.string().allow(''),
         'g-recaptcha-response': Joi.string(),
       }
     },
