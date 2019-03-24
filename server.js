@@ -19,7 +19,7 @@ const app = firebase.initializeApp({
     privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n')
   }),
   databaseURL: "https://ams-bookings.firebaseio.com"
-});
+}, 'bookings-app');
 
 const db = app.database();
 
@@ -37,7 +37,7 @@ const vehiclesApp = firebase.initializeApp({
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-l61vc%40ams-bookings-planner.iam.gserviceaccount.com"
   }),
   databaseURL: "https://ams-bookings-planner.firebaseio.com"
-});
+}, 'vehicles-app');
 
 function triggerWebhook(booking) {
   return axios.post(process.env.WEBHOOK_URL, booking)
