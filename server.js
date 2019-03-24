@@ -9,6 +9,8 @@ const axios = require('axios');
 const _ = require('lodash');
 const querystring = require('querystring')
 
+const {pollVehicleLocations} = require('./smartrax')
+
 const server = new Hapi.Server();
 server.connection({ port: process.env.PORT || 8999 });
 
@@ -64,6 +66,10 @@ function handleNewCancellation(booking) {
   })
 }
 
+/**
+ * Polls for new submissions from the bookings page, and then
+ * triggers the webhook for Zapier
+ */
 function poll(when = Date.now()) {
   const pollNewBookings = new Promise((resolve, reject) => {
     console.log(new Date(when))
@@ -111,6 +117,10 @@ function poll(when = Date.now()) {
 
   return Promise.all([pollNewBookings, pollCancellations])
 }
+
+/**
+ * Polls for all the ambulance locations
+ */
 
 server.route({
   method: 'POST',
@@ -187,5 +197,21 @@ function keepPolling(when) {
   .then(() => setTimeout(keepPolling, 60000))
 }
 keepPolling()
+
+function pollForVehicles() {
+  Promise.race([
+    pollVehicleLocations()
+    .then((vehicles) => {
+      return db.ref('/vehicles')
+      .set(vehicles)
+    })
+    .catch((e) => {
+      console.log(e)
+    }),
+    new Promise((resolve) => setTimeout(resolve, 15000))
+  ])
+  .then(() => setTimeout(pollForVehicles, 15000))
+}
+pollForVehicles()
 
 server.start()
