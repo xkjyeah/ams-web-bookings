@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "engines": {
-    "node": "7.5.x"
+    "node": "10.x.x"
   },
   "scripts": {
     "watch": "webpack -w",
