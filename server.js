@@ -23,6 +23,22 @@ const app = firebase.initializeApp({
 
 const db = app.database();
 
+const vehiclesApp = firebase.initializeApp({
+  credential: firebase.credential.cert({
+    "type": "service_account",
+    "project_id": "ams-bookings-planner",
+    "private_key_id": "7761992a59e789b183a66ef3e0a622cd563b37e2",
+    "private_key": process.env.VEHICLES_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    "client_email": "firebase-adminsdk-l61vc@ams-bookings-planner.iam.gserviceaccount.com",
+    "client_id": "105540882709216654949",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-l61vc%40ams-bookings-planner.iam.gserviceaccount.com"
+  }),
+  databaseURL: "https://ams-bookings-planner.firebaseio.com"
+});
+
 function triggerWebhook(booking) {
   return axios.post(process.env.WEBHOOK_URL, booking)
 }
@@ -200,7 +216,7 @@ function pollForVehicles() {
   Promise.race([
     pollVehicleLocations()
     .then((vehicles) => {
-      return db.ref('/vehicles')
+      return vehiclesApp.database().ref('/vehicles')
       .set(vehicles)
     })
     .catch((e) => {
