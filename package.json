@@ -13,8 +13,7 @@
     "build-webpack": "webpack",
     "deploy": "NODE_ENV=production npm run build && gh-pages -d www",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "babel --out-file server.transpiled.js server.js",
-    "start": "node server.transpiled.js"
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",

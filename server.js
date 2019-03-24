@@ -1,6 +1,4 @@
 
-require('babel-polyfill')
-
 const Hapi = require('hapi')
 const Joi = require('joi')
 const dateformat = require('dateformat');
