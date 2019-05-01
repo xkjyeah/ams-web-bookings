@@ -239,7 +239,7 @@ pollForVehicles()
  */
 function pollForNewMessages() {
   const sendSMSes = async (data) => {
-    for (let [key, {recipients, message}] of Object.entries(data)) {
+    for (let [key, {recipients, message}] of Object.entries(data || {})) {
       try {
         // Rough filter for Singapore phone numbers
         const sanitisedRecipients = recipients.split(/,/g)
