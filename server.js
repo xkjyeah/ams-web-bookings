@@ -6,6 +6,7 @@ const firebase = require('firebase-admin');
 const axios = require('axios');
 const _ = require('lodash');
 const querystring = require('querystring')
+const twilio = require('twilio')
 
 const {pollVehicleLocations} = require('./smartrax')
 
@@ -20,6 +21,8 @@ const app = firebase.initializeApp({
   }),
   databaseURL: "https://ams-bookings.firebaseio.com"
 }, 'bookings-app');
+
+const twilioClient = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN)
 
 const db = app.database();
 
@@ -227,5 +230,56 @@ function pollForVehicles() {
   .then(() => setTimeout(pollForVehicles, 15000))
 }
 pollForVehicles()
+
+/**
+ * Why poll instead of watching? Because when watching,
+ * the same message might be returned. There is no guarantee
+ * that the new messages in one batch will have been fully handled.
+ * In contrast, polling gives us this control.
+ */
+function pollForNewMessages() {
+  const sendSMSes = async (data) => {
+    for (let [key, {recipients, message}] of Object.entries(data)) {
+      try {
+        // Rough filter for Singapore phone numbers
+        const sanitisedRecipients = recipients.split(/,/g)
+        .filter(r => r.length === 8)
+        .filter(r => r.startsWith('9') || r.startsWith('8'))
+        .map(r => `+65${r}`)
+
+        for (let recipient of sanitisedRecipients) {
+          await twilioClient.messages.create({
+            body: message,
+            to: recipient,
+            from: process.env.TWILIO_PHONE_NUMBER,
+          })
+        }
+        vehiclesApp.database().ref(`/sms/${key}/status`)
+        .set('sent')
+      } catch (e) {
+        console.log(e)
+        vehiclesApp.database().ref(`/sms/${key}/status`)
+        .set('errored')
+      }
+    }
+  }
+
+  Promise.race([
+    vehiclesApp.database().ref('/sms')
+    .orderByChild('status')
+    .equalTo('unsent')
+    .once('value')
+    .then((d) => {
+      const data = d.val()
+      return sendSMSes(data)
+    })
+    .catch((e) => {
+      console.log(e)
+    }),
+    new Promise((resolve) => setTimeout(resolve, 60000))
+  ])
+  .then(() => setTimeout(pollForNewMessages, 15000))
+}
+pollForNewMessages()
 
 server.start()
