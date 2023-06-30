@@ -1,5 +1,5 @@
 import * as  Hapi from '@hapi/hapi'
-import * as Joi from '@hapi/joi'
+import * as Joi from 'joi'
 import * as firebase from 'firebase-admin';
 import axios from 'axios';
 import * as _ from 'lodash';

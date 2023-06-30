@@ -8,18 +8,17 @@
   },
   "scripts": {
     "watch": "webpack -w",
-    "build": "npm install && npm run build-webpack && npm run heroku-postbuild",
+    "build": "tsc --build",
     "http": "http-server -c-1 www",
     "build-webpack": "webpack",
     "deploy": "NODE_ENV=production npm run build && gh-pages -d www",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node dist/server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@hapi/hapi": "^21.3.2",
-    "@hapi/joi": "^17.1.1",
     "axios": "^1.4.0",
     "dateformat": "^5.0.3",
     "firebase-admin": "^11.9.0",
@@ -29,9 +28,10 @@
   },
   "devDependencies": {
     "@types/dateformat": "^5.0.0",
-    "@types/hapi__hapi": "^21.0.0",
     "@types/hapi__joi": "^17.1.9",
+    "@types/joi": "^17.2.3",
     "@types/lodash": "^4.14.195",
     "prettier": "^2.8.8"
-  }
+  },
+  "type": "module"
 }
