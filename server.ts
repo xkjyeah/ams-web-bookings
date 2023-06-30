@@ -1,6 +1,6 @@
 import * as  Hapi from '@hapi/hapi'
-import * as Joi from 'joi'
-import * as firebase from 'firebase-admin';
+import Joi from 'joi'
+import firebase from 'firebase-admin';
 import axios from 'axios';
 import * as _ from 'lodash';
 import * as querystring from 'querystring'
@@ -32,9 +32,9 @@ const init = async () => {
     path: '/poll/{dateTime}',
     options: {
       validate: {
-        params: {
+        params: Joi.object({
           dateTime: Joi.date().required(),
-        }
+        }).options({allowUnknown: true})
       },
       description: 'Poll the requests at around a particular time',
     },
@@ -49,7 +49,7 @@ const init = async () => {
     path: '/enquiry',
     options: {
       validate: {
-        payload: {
+        payload: Joi.object({
           email: Joi.string().email(),
           message: Joi.string().allow(''),
           name: Joi.string(),
@@ -61,7 +61,7 @@ const init = async () => {
           service: Joi.string(),
           telephone: Joi.string().allow(''),
           'g-recaptcha-response': Joi.string(),
-        }
+        }).options({allowUnknown: true})
       },
     },
     async handler (request, h) {
@@ -165,7 +165,7 @@ async function poll(when: number) {
       .startAt(dateformat(new Date(when - 10 * 60000), "yyyy-mm-dd HH:MM"))
       .endAt(dateformat(new Date(when + 10 * 60000), "yyyy-mm-dd HH:MM"))
       .once('value', (v) => {
-        const newBookings = Object.entries(v.val())
+        const newBookings = Object.entries(v.val() || {})
           .map(([id, value]: [id: string, value: any]) => ({
             ...value,
             id
@@ -185,7 +185,7 @@ async function poll(when: number) {
       .startAt(dateformat(new Date(when - 10 * 60000), "yyyy-mm-dd HH:MM"))
       .endAt(dateformat(new Date(when + 10 * 60000), "yyyy-mm-dd HH:MM"))
       .once('value', (v) => {
-        const newCancellations = Object.entries(v.val())
+        const newCancellations = Object.entries(v.val() || {})
           .map(([id, value]: [id: string, value: any]) => ({
             ...value,
             id
