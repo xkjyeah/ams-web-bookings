@@ -2,7 +2,7 @@ import * as  Hapi from '@hapi/hapi'
 import Joi from 'joi'
 import firebase from 'firebase-admin';
 import axios from 'axios';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import * as querystring from 'querystring'
 
 function hardError(message: string): string {
