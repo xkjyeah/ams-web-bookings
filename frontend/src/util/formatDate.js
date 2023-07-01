@@ -1,11 +1,9 @@
-const leftPad = require('left-pad');
-
 export function formatDateYMD(date) {
   return date &&
     [
-      leftPad(date.getUTCFullYear(), 4, '0'),
-      leftPad(date.getUTCMonth() + 1, 2, '0'),
-      leftPad(date.getUTCDate(), 2, '0'),
+      (date.getUTCFullYear()).toString().padStart(4, '0'),
+      (date.getUTCMonth() + 1).toString().padStart(2, '0'),
+      (date.getUTCDate()).toString().padStart(2, '0'),
     ].join('-');
 }
 

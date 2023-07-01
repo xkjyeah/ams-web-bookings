@@ -1,10 +1,9 @@
 const webpack = require('webpack')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { VueLoaderPlugin } = require('vue-loader')
 const path = require('path')
 
 const defaultExport = {
   entry: [
-    'babel-polyfill',
     './src/index.js'
   ],
   output: {
