@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import querystring from "querystring";
 
 function prepareData(d) {
@@ -85,20 +84,20 @@ export default {
   watch: {
     postcode(postcode) {
       if (postcode.match(/^[0-9]{6}$/)) {
-        const promise = (this.$postcodePromise = axios
-          .get(
-            "https://developers.onemap.sg/commonapi/search?" +
-              querystring.stringify({
-                searchVal: postcode,
-                returnGeom: "N",
-                getAddrDetails: "Y",
-                pageNum: "1",
-              })
-          )
-          .then((r) => {
+        const promise = (this.$postcodePromise = fetch(
+          "https://developers.onemap.sg/commonapi/search?" +
+            querystring.stringify({
+              searchVal: postcode,
+              returnGeom: "N",
+              getAddrDetails: "Y",
+              pageNum: "1",
+            })
+        )
+          .then((r) => r.json())
+          .then((data) => {
             if (promise === this.$postcodePromise) {
-              if (r.data.results && r.data.results.length > 0) {
-                this.$emit("address-found", prepareData(r.data.results[0]));
+              if (data.results && data.results.length > 0) {
+                this.$emit("address-found", prepareData(data.results[0]));
               }
             }
           }));
