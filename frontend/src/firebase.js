@@ -1,8 +1,6 @@
-const { initializeApp } = require('firebase');
-const { getDatabase } = require('firebase/database')
-const { getAuth, GoogleAuthProvider } = require('firebase/auth')
+const firebase = require('firebase');
 
-const app = initializeApp({
+const app = firebase.initializeApp({
   apiKey: "AIzaSyDsiq9OIO0yTi2cgLbAjiTtWdKmo7HNBPE",
   authDomain: "ams-bookings.firebaseapp.com",
   databaseURL: "https://ams-bookings.firebaseio.com",
@@ -10,28 +8,26 @@ const app = initializeApp({
   messagingSenderId: "245600362111"
 });
 
-const fbAuth = getAuth(app)
-
-const provider = new GoogleAuthProvider();
+const provider = new firebase.auth.GoogleAuthProvider();
 
 module.exports = {
-  fbAuth,
-  fbDB: getDatabase(app),
+  fbAuth: app.auth(),
+  fbDB: app.database(),
 
   fbSignInGoogle() {
-    return fbAuth.signInWithPopup(provider);
+    return app.auth().signInWithPopup(provider);
   },
   fbSignOut() {
-    return fbAuth.signOut();
+    return app.auth().signOut();
   },
 
   fbSignInPassword(email, password) {
-    return fbAuth.signInWithEmailAndPassword(email, password)
+    return app.auth().signInWithEmailAndPassword(email, password)
   },
   fbSignUpPassword(email, password) {
-    return fbAuth.createUserWithEmailAndPassword(email, password)
+    return app.auth().createUserWithEmailAndPassword(email, password)
   },
   fbResetPassword(email, password) {
-    return fbAuth.sendPasswordResetEmail(email)
+    return app.auth().sendPasswordResetEmail(email)
   },
 };

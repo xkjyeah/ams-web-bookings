@@ -4,8 +4,6 @@ import _ from 'lodash'
 import { fbAuth, fbDB } from './firebase'
 import assert from 'assert'
 
-Vue.use(VueX);
-
 const store = new VueX.Store({
   state: {
     user: null,

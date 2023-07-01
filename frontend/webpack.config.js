@@ -34,7 +34,7 @@ const defaultExport = {
       {
         test: /\.(png|jpe?g|gif|svg)(\?\S*)?$/,
         loader: 'file-loader',
-        query: {
+        options: {
           name: '[name].[ext]?[hash]'
         }
       },
@@ -50,8 +50,21 @@ const defaultExport = {
   },
   mode: process.env.NODE_ENV || 'development',
   plugins: [
-    new VueLoaderPlugin()
-  ]
+    new VueLoaderPlugin(),
+    // fix "process is not defined" error:
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+  ],
+  resolve: {
+    fallback: {
+      'querystring': require.resolve('querystring-es3'),
+      'assert': require.resolve('assert'),
+    },
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js'
+    }
+  }
 };
 
 // The other files:

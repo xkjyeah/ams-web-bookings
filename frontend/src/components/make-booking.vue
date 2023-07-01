@@ -41,11 +41,10 @@
             :prefilledAddresses="prefilledAddresses"
           />
 
-          <v-text-field
+          <v-textarea
             label="Pickup location (please include Unit No / Ward No / Bed No)"
             v-model="request.pickupLocation"
             placeholder="e.g. Singapore General Hospital"
-            multi-line
             :rules="[rules.required]"
           />
 
@@ -56,12 +55,11 @@
             :prefilledAddresses="prefilledAddresses"
           />
 
-          <v-text-field
+          <v-textarea
             label="Destination location (please include Unit No / Ward No / Bed No)"
             type="text"
             v-model="request.dropoffLocation"
             placeholder="e.g. XYZ Nursing Home"
-            multi-line
             :rules="[rules.required]"
           />
           <div>(Address, level / unit number, ward and bed number)</div>
@@ -126,10 +124,9 @@
             />
           </v-radio-group>
 
-          <v-text-field
+          <v-textarea
             label="Remarks"
             type="text"
-            multi-line
             v-model="request.precautions"
           />
 
