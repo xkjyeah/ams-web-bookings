@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueX from 'vuex'
 import _ from 'lodash'
-import {fbAuth, fbDB, fbStorage, fbSignIn, fbSignOut} from './firebase'
+import { fbAuth, fbDB } from './firebase'
 import assert from 'assert'
 
 Vue.use(VueX);
@@ -95,10 +95,10 @@ const store = new VueX.Store({
 let userData = {};
 
 fbDB.ref('/users')
-.once('value', (userDataResponse) => {
-  let userData = userDataResponse.val();
-  store.commit('setTrustedEmails', _.values(userData).map(u => u.email))
-})
+  .once('value', (userDataResponse) => {
+    let userData = userDataResponse.val();
+    store.commit('setTrustedEmails', _.values(userData).map(u => u.email))
+  })
 
 setInterval(() => {
   store.commit('setNow')
@@ -121,9 +121,9 @@ fbAuth.onAuthStateChanged((user) => {
       }),
       new Promise((resolve) => setTimeout(() => resolve(false), 10000))
     ])
-    .then((amIAdmin) => {
-      store.commit('setIsAdmin', amIAdmin)
-    })
+      .then((amIAdmin) => {
+        store.commit('setIsAdmin', amIAdmin)
+      })
 
   } else {
     store.commit('setUser', null)
