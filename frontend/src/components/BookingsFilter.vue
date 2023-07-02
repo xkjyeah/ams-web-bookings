@@ -3,8 +3,9 @@
     <v-flex sm2>
       <v-radio-group
         @change="updateParam('filterField', $event)"
-        :input-value="value.filterField"
-        label="Search by:">
+        :value="value.filterField"
+        label="Search by:"
+      >
         <v-radio value="Request Date" label="Request Date" />
         <v-radio value="Pick-up Date" label="Pick-up Date" />
       </v-radio-group>
@@ -12,9 +13,11 @@
     <v-flex sm3>
       <v-radio-group
         @change="updateParam('futureOnly', $event)"
-        :input-value="value.futureOnly" label="Date range:">
-        <v-radio :value="true" label="Today and future"/>
-        <v-radio :value="false" label="Custom date range"/>
+        :value="value.futureOnly"
+        label="Date range:"
+      >
+        <v-radio :value="true" label="Today and future" />
+        <v-radio :value="false" label="Custom date range" />
       </v-radio-group>
     </v-flex>
     <v-slide-y-transition>
@@ -22,7 +25,8 @@
         <my-calendar
           @input="updateParam('dates', $event)"
           :value="value.dates"
-          :disabled="value.futureOnly"/>
+          :disabled="value.futureOnly"
+        />
       </v-flex>
     </v-slide-y-transition>
     <v-spacer />
@@ -30,21 +34,21 @@
 </template>
 
 <script>
-import MyCalendar from './MyCalendar.vue'
+import MyCalendar from "./MyCalendar.vue";
 
 export default {
-  props: ['value'],
+  props: ["value"],
   components: {
     MyCalendar,
   },
   methods: {
     updateParam(p, $event) {
-      console.log(p, $event)
-      this.$emit('input', {
+      console.log(p, $event);
+      this.$emit("input", {
         ...this.value,
-        [p]: $event
-      })
-    }
-  }
-}
+        [p]: $event,
+      });
+    },
+  },
+};
 </script>

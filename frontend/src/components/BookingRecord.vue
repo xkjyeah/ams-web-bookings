@@ -85,6 +85,7 @@
 }
 td {
   border-top: solid 1px #ccc;
+  padding: 0.5em;
 }
 </style>
 <script>
