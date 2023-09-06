@@ -94,16 +94,18 @@
             <v-radio label="Female" value="Female" />
           </v-radio-group>
 
-          <v-radio-group
-            label="Patient's estimated weight"
-            v-model="request.patientWeight"
-            :rules="[rules.required]"
-          >
-            <v-radio label="< 70kg" value="< 70 kg" />
-            <v-radio label="70 kg" value="70 kg" />
-            <v-radio label="90 kg" value="90 kg" />
-            <v-radio label=">90 kg" value="> 90kg" />
-          </v-radio-group>
+          <v-text-field
+            label="Patient's estimated weight (kg)"
+            type="text"
+            :value="
+              request.patientWeight === null
+                ? null
+                : parseInt(request.patientWeight)
+            "
+            @change="(e) => (request.patientWeight = e ? e + 'kg' : null)"
+            placeholder="60"
+            :rules="[rules.required, rules.isNumeric]"
+          />
 
           <v-radio-group
             prop="wheelchairStretcher"
@@ -271,6 +273,7 @@ export default {
     return {
       rules: {
         required: (v) => !!v || "Required",
+        isNumeric: (v) => /^[0-9]{1,3}$/.test(v) || "Must be a number",
       },
       isFormValid: true,
       error: null,
