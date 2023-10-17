@@ -1,5 +1,11 @@
 import { initializeApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider } from 'firebase/auth'
+import {
+  getAuth, GoogleAuthProvider, signOut,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup
+} from 'firebase/auth'
 import { getDatabase } from 'firebase/database';
 
 const app = initializeApp({
@@ -17,18 +23,18 @@ export function fbDB() {
 }
 
 export function fbSignInGoogle() {
-  return getAuth().signInWithPopup(provider);
+  return signInWithPopup(getAuth(), provider);
 }
 export function fbSignOut() {
-  return getAuth().signOut();
+  return signOut(getAuth());
 }
 
 export function fbSignInPassword(email, password) {
-  return getAuth().signInWithEmailAndPassword(email, password)
+  return signInWithEmailAndPassword(getAuth(), email, password)
 }
 export function fbSignUpPassword(email, password) {
-  return getAuth().createUserWithEmailAndPassword(email, password)
+  return createUserWithEmailAndPassword(getAuth(), email, password)
 }
 export function fbResetPassword(email, password) {
-  return getAuth().sendPasswordResetEmail(email)
+  return sendPasswordResetEmail(getAuth(), email)
 }
