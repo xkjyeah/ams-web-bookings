@@ -20,7 +20,7 @@
     "@mdi/font": "^2.4.85",
     "assert": "^2.0.0",
     "dateformat": "^2.0.0",
-    "firebase": "^5.9.1",
+    "firebase": "^10.5.0",
     "material-design-icons-iconfont": "^3.0.3",
     "process": "^0.11.10",
     "querystring-es3": "^0.2.1",

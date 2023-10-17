@@ -1,73 +1,36 @@
 <template>
   <v-layout>
     <v-flex v-if="user && user.emailVerified" class="make-booking">
-      <img
-        src="https://www.ambulanceservice.com.sg/images/logo.png"
-        class="logo"
-      />
+      <img src="https://www.ambulanceservice.com.sg/images/logo.png" class="logo" />
 
       <h1>AMS Transport Booking Form</h1>
 
       <v-form v-model="isFormValid">
         <section>
-          <v-text-field
-            type="email"
-            label="Email (log out to change)"
-            :value="user.email"
-            :disabled="true"
-          />
+          <v-text-field type="email" label="Email (log out to change)" :value="user.email" :disabled="true" />
 
-          <MyDatePicker
-            label="Pickup Date"
-            v-model="request.pickupDate"
-            :rules="[rules.required]"
-          />
-          <MyTimePicker
-            label="Pickup Time 24-hour time (00:00 for midnight, 12:00 for noon)"
-            placeholder="e.g. 13:30"
-            v-model="request.pickupTime"
-            :rules="[rules.required]"
-          />
-          <MyTimePicker
-            label="Appointment time at clinic/hospital (if applicable)"
-            placeholder="e.g. 14:00"
-            v-model="request.appointmentTime"
-          />
+          <MyDatePicker label="Pickup Date" v-model="request.pickupDate" :rules="[rules.required]" />
+          <MyTimePicker label="Pickup Time 24-hour time (00:00 for midnight, 12:00 for noon)" placeholder="e.g. 13:30"
+            v-model="request.pickupTime" :rules="[rules.required]" />
+          <MyTimePicker label="Appointment time at clinic/hospital (if applicable)" placeholder="e.g. 14:00"
+            v-model="request.appointmentTime" />
 
           <h3>Pickup Location</h3>
-          <PostcodeAddress
-            label="Singapore Postcode"
-            @address-found="request.pickupLocation = `${$event}\n`"
-            :prefilledAddresses="prefilledAddresses"
-          />
+          <PostcodeAddress label="Singapore Postcode" @address-found="request.pickupLocation = `${$event}\n`"
+            :prefilledAddresses="prefilledAddresses" />
 
-          <v-textarea
-            label="Pickup location (please include Unit No / Ward No / Bed No)"
-            v-model="request.pickupLocation"
-            placeholder="e.g. Singapore General Hospital"
-            :rules="[rules.required]"
-          />
+          <v-textarea label="Pickup location (please include Unit No / Ward No / Bed No)" v-model="request.pickupLocation"
+            placeholder="e.g. Singapore General Hospital" :rules="[rules.required]" />
 
           <h3>Dropoff Location</h3>
-          <PostcodeAddress
-            label="Singapore Postcode"
-            @address-found="request.dropoffLocation = `${$event}\n`"
-            :prefilledAddresses="prefilledAddresses"
-          />
+          <PostcodeAddress label="Singapore Postcode" @address-found="request.dropoffLocation = `${$event}\n`"
+            :prefilledAddresses="prefilledAddresses" />
 
-          <v-textarea
-            label="Destination location (please include Unit No / Ward No / Bed No)"
-            type="text"
-            v-model="request.dropoffLocation"
-            placeholder="e.g. XYZ Nursing Home"
-            :rules="[rules.required]"
-          />
+          <v-textarea label="Destination location (please include Unit No / Ward No / Bed No)" type="text"
+            v-model="request.dropoffLocation" placeholder="e.g. XYZ Nursing Home" :rules="[rules.required]" />
           <div>(Address, level / unit number, ward and bed number)</div>
 
-          <v-radio-group
-            v-model="request.twoWay"
-            label="Is a return trip required? (same day only)"
-          >
+          <v-radio-group v-model="request.twoWay" label="Is a return trip required? (same day only)">
             <v-radio label="Yes, return trip on the same day" value="2-way" />
             <v-radio label="No, one way only" value="-" />
           </v-radio-group>
@@ -75,101 +38,49 @@
 
         <section>
           <h2>Patient Particulars</h2>
-          <v-text-field
-            label="Patient Name"
-            type="text"
-            v-model="request.patientName"
-            placeholder="e.g. Alexander Fleming"
-            :rules="[rules.required]"
-          />
-          <v-text-field
-            label="Patient NRIC (last 4 digits + letter)"
-            type="text"
-            v-model="request.patientNric"
-            placeholder="e.g. 1234X"
-          />
+          <v-text-field label="Patient Name" type="text" v-model="request.patientName"
+            placeholder="e.g. Alexander Fleming" :rules="[rules.required]" />
+          <v-text-field label="Patient NRIC (last 4 digits + letter)" type="text" v-model="request.patientNric"
+            placeholder="e.g. 1234X" />
 
           <v-radio-group label="Patient Gender" v-model="request.patientGender">
             <v-radio label="Male" value="Male" />
             <v-radio label="Female" value="Female" />
           </v-radio-group>
 
-          <v-text-field
-            label="Patient's estimated weight (kg)"
-            type="text"
-            :value="
-              request.patientWeight === null
-                ? null
-                : parseInt(request.patientWeight)
-            "
-            @change="(e) => (request.patientWeight = e ? e + 'kg' : null)"
-            placeholder="60"
-            :rules="[rules.required, rules.isNumeric]"
-          />
+          <v-text-field label="Patient's estimated weight (kg)" type="text" :value="request.patientWeight === null
+            ? null
+            : parseInt(request.patientWeight)
+            " @change="(e) => (request.patientWeight = e ? e + 'kg' : null)" placeholder="60"
+            :rules="[rules.required, rules.isNumeric]" />
 
-          <v-radio-group
-            prop="wheelchairStretcher"
-            label="Stretcher / Wheelchair"
-            v-model="request.wheelchairStretcher"
-            :rules="[rules.required]"
-          >
+          <v-radio-group prop="wheelchairStretcher" label="Stretcher / Wheelchair" v-model="request.wheelchairStretcher"
+            :rules="[rules.required]">
             <v-radio value="-" label="No stretcher / wheelchair required" />
             <v-radio value="Stretcher" label="Stretcher is required" />
             <v-radio value="OWC" label="Patient has his own wheelchair" />
-            <v-radio
-              value="Motorized WC"
-              label="Patient uses motorized wheelchair"
-            />
-            <v-radio
-              value="Ambulance WC"
-              label="Patient requires a wheelchair from the ambulance company"
-            />
+            <v-radio value="Motorized WC" label="Patient uses motorized wheelchair" />
+            <v-radio value="Ambulance WC" label="Patient requires a wheelchair from the ambulance company" />
           </v-radio-group>
 
-          <v-textarea
-            label="Remarks"
-            type="text"
-            v-model="request.precautions"
-          />
+          <v-textarea label="Remarks" type="text" v-model="request.precautions" />
 
-          <v-text-field
-            label="Oxygen flow rate (if required) (l/min)"
-            v-model="request.oxygenRate"
-            :step="1"
-            :min="0"
-            :max="10"
-            type="number"
-          />
+          <v-text-field label="Oxygen flow rate (if required) (l/min)" v-model="request.oxygenRate" :step="1" :min="0"
+            :max="10" type="number" />
         </section>
         <section>
           <h2>Accompanying passengers</h2>
-          <v-text-field
-            label="Name and contact of accompanying passengers, if any"
-            type="text"
-            v-model="request.accompanyingPassengers"
-            placeholder="e.g. mother and sister, 81230000"
-          />
+          <v-text-field label="Name and contact of accompanying passengers, if any" type="text"
+            v-model="request.accompanyingPassengers" placeholder="e.g. mother and sister, 81230000" />
         </section>
         <section>
           <h2>Particulars of requester</h2>
-          <v-text-field
-            label="Your name"
-            type="text"
-            v-model="request.contactPerson"
-            placeholder="e.g. Staff Nurse Regi"
-            :rules="[rules.required]"
-          />
-          <v-text-field
-            label="Contact number"
-            type="tel"
-            v-model="request.contactPhone"
-            placeholder="e.g. 61112222"
-          />
+          <v-text-field label="Your name" type="text" v-model="request.contactPerson" placeholder="e.g. Staff Nurse Regi"
+            :rules="[rules.required]" />
+          <v-text-field label="Contact number" type="tel" v-model="request.contactPhone" placeholder="e.g. 61112222" />
         </section>
 
-        <v-btn color="primary" :disabled="!isFormValid" @click="submit()"
-          >Submit Booking!</v-btn
-        >
+        <v-btn color="primary" :disabled="!isFormValid" @click="submit()">Submit Booking!</v-btn>
       </v-form>
     </v-flex>
     <v-flex v-else class="make-booking">
@@ -191,6 +102,8 @@ import PostcodeAddress from "./PostcodeAddress.vue";
 const { formatDate, parseDate } = require("../util/formatDate");
 const querystring = require("querystring");
 const { fbDB } = require("../firebase");
+
+import { ref, set, push, update } from 'firebase/database'
 
 function mergeDatesToString(date, time) {
   const timeParts = [time.getUTCHours(), time.getUTCMinutes(), 0];
@@ -337,10 +250,10 @@ export default {
         // billTo: this.userData && this.userData.billTo,
       };
 
-      const key = fbDB.ref("/bookings").push().key;
+      const key = push(ref(fbDB(), "/bookings")).key;
 
       this.loadingSpinner(
-        fbDB.ref().update({
+        update(ref(fbDB(), '/'), {
           [`bookings/${key}`]: data,
           [`userBookings/${this.user.uid}/${key}`]: _.pick(data, [
             "createdAt",

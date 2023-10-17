@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import VueX from 'vuex'
 import _ from 'lodash'
-import { fbAuth, fbDB } from './firebase'
+import { getAuth } from 'firebase/auth'
+import { fbDB } from './firebase'
 import assert from 'assert'
+import { ref, get, query, orderByKey, limitToFirst } from 'firebase/database'
 
 const store = new VueX.Store({
   state: {
@@ -92,17 +94,16 @@ const store = new VueX.Store({
 
 let userData = {};
 
-fbDB.ref('/users')
-  .once('value', (userDataResponse) => {
-    let userData = userDataResponse.val();
-    store.commit('setTrustedEmails', _.values(userData).map(u => u.email))
-  })
+get(ref(fbDB(), '/users')).then((userDataResponse) => {
+  let userData = userDataResponse.val();
+  store.commit('setTrustedEmails', _.values(userData).map(u => u.email))
+})
 
 setInterval(() => {
   store.commit('setNow')
 }, 60000);
 
-fbAuth.onAuthStateChanged((user) => {
+getAuth().onAuthStateChanged((user) => {
   if (user) {
     store.commit('setUser', user)
     store.commit('setUserData', _.values(userData).find(u => u.email == user.email))
@@ -110,10 +111,9 @@ fbAuth.onAuthStateChanged((user) => {
     Promise.race([
       new Promise((resolve, reject) => {
         // Do a privileged action, and expect it to succeed
-        fbDB.ref('/admins')
-          .orderByKey()
-          .limitToFirst(1)
-          .once('value', (userDataResponse) => {
+        get(query(ref(fbDB(), '/admins'),
+          orderByKey(),
+          limitToFirst(1))).then((_userDataResponse) => {
             resolve(true)
           })
       }),

@@ -5,16 +5,10 @@
     <table class="table" v-if="bookings">
       <thead>
         <tr>
-          <th
-            :class="{ sortable: true, 'sort-on': sort.field == 'pickupTime' }"
-            @click="toggleSort('pickupTime')"
-          >
+          <th :class="{ sortable: true, 'sort-on': sort.field == 'pickupTime' }" @click="toggleSort('pickupTime')">
             Pickup Date
           </th>
-          <th
-            :class="{ sortable: true, 'sort-on': sort.field == 'createdAt' }"
-            @click="toggleSort('createdAt')"
-          >
+          <th :class="{ sortable: true, 'sort-on': sort.field == 'createdAt' }" @click="toggleSort('createdAt')">
             Booking Date
           </th>
           <th>Patient Name</th>
@@ -25,11 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        <booking-record-admin
-          v-for="booking in sortedBookings"
-          :booking="booking"
-          :key="booking.id"
-        >
+        <booking-record-admin v-for="booking in sortedBookings" :booking="booking" :key="booking.id">
         </booking-record-admin>
       </tbody>
     </table>
@@ -45,12 +35,15 @@
   flex-direction: row;
   justify-content: flex-start;
 }
+
 .table {
   width: 100%;
   border-collapse: collapse;
+
   thead th {
     background-color: #ddd;
   }
+
   tbody td {
     border-bottom: solid 1px #ccc;
   }
@@ -58,6 +51,7 @@
   th.sortable {
     cursor: pointer;
   }
+
   th.sort-on {
     background-color: #fff;
   }
@@ -69,6 +63,7 @@ import { mapState, mapActions } from "vuex";
 const { formatDate, parseDate } = require("../util/formatDate");
 const querystring = require("querystring");
 const { fbDB } = require("../firebase");
+import { ref, onValue, orderByChild, startAt, endAt, query, off } from 'firebase/database'
 const _ = require("lodash");
 const dateformat = require("../util/dateformat");
 
@@ -99,10 +94,10 @@ export default {
       "fbRef",
       (newRef, oldRef) => {
         if (oldRef) {
-          oldRef.off("value", boundNewBookingHandler);
+          off(oldRef, 'value', boundNewBookingHandler);
         }
         if (newRef) {
-          newRef.on("value", boundNewBookingHandler);
+          onValue(newRef, boundNewBookingHandler);
         }
       },
       {
@@ -111,7 +106,7 @@ export default {
     );
   },
   beforeDestroy() {
-    if (this.fbRef) this.fbRef.off("value", this._boundNewBookingHandler);
+    if (this.fbRef) off(this.fbRef, "value", this._boundNewBookingHandler);
   },
   computed: {
     ...mapState(["user", "userData"]),
@@ -122,16 +117,18 @@ export default {
       );
     },
     fbRef() {
-      let fbRef = fbDB.ref("/bookings");
+      let fbRef = ref(fbDB(), "/bookings");
+
+      let constraints = []
 
       if (this.filter.filterField == "Request Date") {
-        fbRef = fbRef.orderByChild("createdAt");
+        constraints.push(orderByChild("createdAt"));
       } else {
-        fbRef = fbRef.orderByChild("pickupTime");
+        constraints.push(orderByChild("pickupTime"));
       }
 
       if (this.filter.futureOnly) {
-        fbRef = fbRef.startAt(dateformat(new Date(), "yyyy-mm-dd"));
+        constraints.push(startAt(dateformat(new Date(), "yyyy-mm-dd")));
       } else if (
         this.filter.dates &&
         this.filter.dates[0] &&
@@ -139,15 +136,13 @@ export default {
       ) {
         const realEndDate = new Date(this.filter.dates[1].getTime());
         realEndDate.setDate(realEndDate.getDate() + 1);
-        fbRef = fbRef
-          .startAt(dateformat(this.filter.dates[0], "yyyy-mm-dd"))
-          .endAt(dateformat(realEndDate, "yyyy-mm-dd"));
+        constraints.push(startAt(dateformat(this.filter.dates[0], "yyyy-mm-dd")))
+        constraints.push(endAt(dateformat(realEndDate, "yyyy-mm-dd")));
       } else {
-        fbRef = fbRef
-          .startAt(dateformat(new Date().getTime(), "yyyy-mm-dd"))
-          .endAt(dateformat(new Date().getTime(), "yyyy-mm-dd"));
+        constraints.push(startAt(dateformat(new Date().getTime(), "yyyy-mm-dd")))
+        constraints.push(endAt(dateformat(new Date().getTime(), "yyyy-mm-dd")));
       }
-      return fbRef;
+      return query(fbRef, ...constraints);
     },
   },
   components: {

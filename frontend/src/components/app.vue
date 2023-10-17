@@ -34,12 +34,8 @@
         </v-btn>
       </v-toolbar>
       <loading-overlay v-show="isLoading"> </loading-overlay>
-      <error-overlay
-        v-if="errorMessage && errorType"
-        :title="errorMessage"
-        @cancel="setErrorMessage($event)"
-        :type="errorType"
-      >
+      <error-overlay v-if="errorMessage && errorType" :title="errorMessage" @cancel="setErrorMessage($event)"
+        :type="errorType">
       </error-overlay>
       <router-view></router-view>
     </v-content>
@@ -53,7 +49,7 @@ import Vue from "vue";
 
 const { formatDate, parseDate } = require("../util/formatDate");
 const querystring = require("querystring");
-const { fbAuth } = require("../firebase");
+import { getAuth } from 'firebase/auth'
 
 import LoadingOverlay from "./loading-overlay.vue";
 import ConfirmModal from "./ConfirmModal.vue";
@@ -106,7 +102,7 @@ export default {
   methods: {
     ...mapMutations(["setErrorMessage"]),
     signOut() {
-      fbAuth.signOut();
+      getAuth().signOut();
       this.$router.push("/login");
     },
   },
