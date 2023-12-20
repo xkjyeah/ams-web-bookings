@@ -42,9 +42,6 @@ export function fbResetPassword(email, password) {
 
 
 export function fbSendEmailLink(email) {
-  console.log(`${window.location.protocol}//${window.location.host}/?` + new URLSearchParams({
-    email
-  }).toString())
   sendSignInLinkToEmail(getAuth(), email, {
     handleCodeInApp: true,
     url: `${window.location.protocol}//${window.location.host}/?` + new URLSearchParams({
