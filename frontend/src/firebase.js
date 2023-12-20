@@ -42,7 +42,7 @@ export function fbResetPassword(email, password) {
 
 
 export function fbSendEmailLink(email) {
-  sendSignInLinkToEmail(getAuth(), email, {
+  return sendSignInLinkToEmail(getAuth(), email, {
     handleCodeInApp: true,
     url: `${window.location.protocol}//${window.location.host}/?` + new URLSearchParams({
       email
