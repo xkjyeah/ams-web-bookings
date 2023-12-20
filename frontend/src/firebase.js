@@ -4,7 +4,8 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPopup
+  signInWithPopup,
+  sendSignInLinkToEmail
 } from 'firebase/auth'
 import { getDatabase } from 'firebase/database';
 
@@ -37,4 +38,17 @@ export function fbSignUpPassword(email, password) {
 }
 export function fbResetPassword(email, password) {
   return sendPasswordResetEmail(getAuth(), email)
+}
+
+
+export function fbSendEmailLink(email) {
+  console.log(`${window.location.protocol}//${window.location.host}/?` + new URLSearchParams({
+    email
+  }).toString())
+  sendSignInLinkToEmail(getAuth(), email, {
+    handleCodeInApp: true,
+    url: `${window.location.protocol}//${window.location.host}/?` + new URLSearchParams({
+      email
+    }).toString()
+  })
 }

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueX from 'vuex'
 import _ from 'lodash'
-import { getAuth } from 'firebase/auth'
+import { getAuth, signInWithEmailLink, isSignInWithEmailLink } from 'firebase/auth'
 import { fbDB } from './firebase'
 import assert from 'assert'
 import { ref, get, query, orderByKey, limitToFirst } from 'firebase/database'
@@ -127,6 +127,15 @@ getAuth().onAuthStateChanged((user) => {
     store.commit('setUser', null)
     store.commit('setUserData', null)
     store.commit('setIsAdmin', false)
+  }
+})
+
+window.addEventListener('DOMContentLoaded', () => {
+  const query = new URLSearchParams(window.location.search)
+  const email = query.get('email')
+
+  if (email && isSignInWithEmailLink(getAuth(), window.location.href)) {
+    signInWithEmailLink(getAuth(), email)
   }
 })
 
