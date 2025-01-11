@@ -5,10 +5,16 @@
     <table class="table" v-if="bookings">
       <thead>
         <tr>
-          <th :class="{ sortable: true, 'sort-on': sort.field == 'pickupTime' }" @click="toggleSort('pickupTime')">
+          <th
+            :class="{ sortable: true, 'sort-on': sort.field == 'pickupTime' }"
+            @click="toggleSort('pickupTime')"
+          >
             Pickup Date
           </th>
-          <th :class="{ sortable: true, 'sort-on': sort.field == 'createdAt' }" @click="toggleSort('createdAt')">
+          <th
+            :class="{ sortable: true, 'sort-on': sort.field == 'createdAt' }"
+            @click="toggleSort('createdAt')"
+          >
             Booking Date
           </th>
           <th>Patient Name</th>
@@ -19,7 +25,11 @@
         </tr>
       </thead>
       <tbody>
-        <booking-record-user v-for="booking in bookings" :id="booking.id" :key="booking.id" />
+        <booking-record-user
+          v-for="booking in sortedBookings"
+          :id="booking.id"
+          :key="booking.id"
+        />
       </tbody>
     </table>
     <i class="el-icon-loading" v-else />
@@ -60,7 +70,15 @@ import MyCalendar from "./MyCalendar.vue";
 import BookingRecordUser from "./BookingRecordUser.vue";
 import BookingsFilter from "./BookingsFilter.vue";
 
-import { ref, orderByChild, startAt, endAt, query, off, onValue } from 'firebase/database'
+import {
+  ref,
+  orderByChild,
+  startAt,
+  endAt,
+  query,
+  off,
+  onValue,
+} from "firebase/database";
 
 const { formatDate, parseDate } = require("../util/formatDate");
 const querystring = require("querystring");
@@ -71,7 +89,11 @@ const dateformat = require("../util/dateformat");
 export default {
   data() {
     return {
-      bookings: null,
+      bookings: {
+        0: null,
+        1: null,
+        2: null,
+      },
       filter: {
         dates: [new Date(), new Date()],
         filterField: "Pick-up Date",
@@ -84,17 +106,23 @@ export default {
     };
   },
   created() {
-    const boundNewBookingHandler = (this._boundNewBookingHandler = (x) => {
-      this.newBookingReceived(x);
-    });
+    this._destroyHandlers = { fbRefs: [] };
+
     this.$watch(
-      "fbRef",
-      (newRef, oldRef) => {
-        if (oldRef) {
-          off(oldRef, "value", boundNewBookingHandler);
-        }
-        if (newRef) {
-          onValue(newRef, boundNewBookingHandler);
+      "fbRefs",
+      (newRefs, oldRefs) => {
+        this._destroyHandlers.fbRefs.forEach((h) => h());
+
+        if (newRefs) {
+          const destroyFns = [];
+
+          newRefs.forEach((newRef, index) => {
+            const handler = (x) => this.newBookingReceived(x, index);
+            onValue(newRef, handler);
+            destroyFns.push(() => off(newRef, "value", handler));
+          });
+
+          this._destroyHandlers.fbRefs = destroyFns;
         }
       },
       {
@@ -103,19 +131,32 @@ export default {
     );
   },
   beforeDestroy() {
-    if (this.fbRef) off(this.fbRef, "value", this._boundNewBookingHandler);
+    Object.values(this._destroyHandlers).forEach((handlers) => {
+      handlers.forEach((h) => h());
+    });
   },
   computed: {
-    ...mapState(["user", "userData"]),
+    ...mapState(["user", "userData", "userTeamData"]),
+    sortedBookings() {
+      return (
+        this.combinedBookings &&
+        _.orderBy(this.combinedBookings, [this.sort.field], [this.sort.order])
+      );
+    },
     userBookingRef() {
       if (this.user && this.user.uid) {
         return `/userBookings/${this.user.uid}`;
       }
     },
-    fbRef() {
-      if (this.userBookingRef) {
-        let fbRef = ref(fbDB(), this.userBookingRef);
-        let constraints = []
+    teamBookingRef() {
+      if (this.userTeamData) {
+        return `/teamBookings/${this.userTeamData.teamToken}`;
+      }
+    },
+    fbRefs() {
+      return [this.userBookingRef, this.teamBookingRef].filter(Boolean).map((r) => {
+        let fbRef = ref(fbDB(), r);
+        let constraints = [];
 
         if (this.filter.filterField == "Request Date") {
           constraints.push(orderByChild("createdAt"));
@@ -125,23 +166,21 @@ export default {
 
         if (this.filter.futureOnly) {
           constraints.push(startAt(dateformat(new Date(), "yyyy-mm-dd")));
-        } else if (
-          this.filter.dates &&
-          this.filter.dates[0] &&
-          this.filter.dates[1]
-        ) {
+        } else if (this.filter.dates && this.filter.dates[0] && this.filter.dates[1]) {
           const realEndDate = new Date(this.filter.dates[1].getTime());
           realEndDate.setDate(realEndDate.getDate() + 1);
 
-          constraints.push(startAt(dateformat(this.filter.dates[0], "yyyy-mm-dd")))
+          constraints.push(startAt(dateformat(this.filter.dates[0], "yyyy-mm-dd")));
           constraints.push(endAt(dateformat(realEndDate, "yyyy-mm-dd")));
         } else {
-
-          constraints.push(startAt(dateformat(new Date(), "yyyy-mm-dd")))
+          constraints.push(startAt(dateformat(new Date(), "yyyy-mm-dd")));
           constraints.push(endAt(dateformat(new Date(), "yyyy-mm-dd")));
         }
         return query(fbRef, ...constraints);
-      }
+      });
+    },
+    combinedBookings() {
+      return _.uniqBy(_.flatten(_.values(this.bookings).filter(Boolean)), (b) => b.id);
     },
   },
   components: {
@@ -151,12 +190,6 @@ export default {
   },
   methods: {
     ...mapActions(["loadingSpinner", "flashError"]),
-    sortedBookings() {
-      return (
-        this.bookings &&
-        _.orderBy(this.bookings, [this.sort.field], [this.sort.order])
-      );
-    },
     toggleSort(field) {
       if (this.sort.field == field) {
         this.sort.order = this.sort.order == "asc" ? "desc" : "asc";
@@ -164,8 +197,8 @@ export default {
         this.sort.field = field;
       }
     },
-    newBookingReceived(v) {
-      this.bookings = _(v.val())
+    newBookingReceived(v, index) {
+      this.bookings[index] = _(v.val())
         .toPairs()
         .map(([key, value]) => ({
           ...value,

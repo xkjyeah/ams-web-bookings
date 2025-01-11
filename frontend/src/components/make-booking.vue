@@ -223,6 +223,8 @@ export default {
       ];
       const now = new Date();
 
+      const teamToken = this.userTeamData?.teamToken || null
+
       const data = {
         ...this.request,
         pickupDate: null,
@@ -247,7 +249,7 @@ export default {
           ].join(":"),
 
         contactEmail: this.user.email,
-        teamToken: this.userTeamData?.teamToken
+        teamToken: teamToken
         // billTo: this.userData && this.userData.billTo,
       };
 
@@ -260,6 +262,13 @@ export default {
             "createdAt",
             "pickupTime",
           ]),
+          // If there's a team, update the team's index too!
+          ...(teamToken ? {
+            [`teamBookings/${teamToken}/${key}`]: _.pick(data, [
+              "createdAt",
+              "pickupTime",
+            ]),
+          } : {})
         })
       )
         .then(() => {
