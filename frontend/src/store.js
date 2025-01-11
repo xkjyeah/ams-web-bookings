@@ -4,12 +4,13 @@ import _ from 'lodash'
 import { getAuth, signInWithEmailLink, isSignInWithEmailLink } from 'firebase/auth'
 import { fbDB } from './firebase'
 import assert from 'assert'
-import { ref, get, query, orderByKey, limitToFirst } from 'firebase/database'
+import { ref, get, query, orderByKey, limitToFirst, update } from 'firebase/database'
 
 const store = new VueX.Store({
   state: {
     user: null,
     userData: null,
+    userTeamData: null,
     isLoading: false,
     errorMessage: '',
     errorType: '',
@@ -32,6 +33,9 @@ const store = new VueX.Store({
     },
     setUser(state, data) {
       state.user = data;
+    },
+    setUserTeamData(state, data) {
+      state.userTeamData = data;
     },
     setUserData(state, data) {
       state.userData = data;
@@ -103,19 +107,20 @@ setInterval(() => {
   store.commit('setNow')
 }, 60000);
 
-getAuth().onAuthStateChanged((user) => {
+getAuth().onAuthStateChanged(async (user) => {
   if (user) {
     store.commit('setUser', user)
     store.commit('setUserData', _.values(userData).find(u => u.email == user.email))
 
-    Promise.race([
-      new Promise((resolve, reject) => {
+    const encodedUserEmail = user.email.replace(/\./g, '%2e')
+
+    await Promise.race([
+      new Promise(async (resolve, reject) => {
         // Do a privileged action, and expect it to succeed
-        get(query(ref(fbDB(), '/admins'),
+        const _userDataResponse = await get(query(ref(fbDB(), '/admins'),
           orderByKey(),
-          limitToFirst(1))).then((_userDataResponse) => {
-            resolve(true)
-          })
+          limitToFirst(1)))
+        resolve(true)
       }),
       new Promise((resolve) => setTimeout(() => resolve(false), 10000))
     ])
@@ -123,6 +128,20 @@ getAuth().onAuthStateChanged((user) => {
         store.commit('setIsAdmin', amIAdmin)
       })
 
+    // Update the userTeams, so we can identify users in the backend
+    // and maybe manage teamTokens in the future
+    await update(
+      ref(fbDB(), `/userTeams/${encodedUserEmail}`),
+      {
+        uid: user.uid,
+        lastLoggedIn: Date.now()
+      }
+    )
+
+    const teamData = (await get(
+      ref(fbDB(), `/userTeams/${encodedUserEmail}`),
+    )).val()
+    store.commit('setUserTeamData', teamData)
   } else {
     store.commit('setUser', null)
     store.commit('setUserData', null)

@@ -194,7 +194,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["user", "userData"]),
+    ...mapState(["user", "userData", "userTeamData"]),
     prefilledAddresses: () => PREFILLED_ADDRESSES,
   },
   components: {
@@ -247,6 +247,7 @@ export default {
           ].join(":"),
 
         contactEmail: this.user.email,
+        teamToken: this.userTeamData?.teamToken
         // billTo: this.userData && this.userData.billTo,
       };
 
