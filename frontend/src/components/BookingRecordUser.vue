@@ -1,7 +1,12 @@
 <template>
   <booking-record v-if="rec" :booking="rec" :now="now">
     <v-toolbar flat>
-      <v-btn icon @click="cancel" title="Cancel" v-if="!rec.cancelled && !rec.cancelledByUser">
+      <v-btn
+        icon
+        @click="cancel"
+        title="Cancel"
+        v-if="!rec.cancelled && !rec.cancelledByUser"
+      >
         <v-icon>delete</v-icon>
       </v-btn>
       <!-- <v-btn icon @click="reopen" title="Uncancel">
@@ -18,7 +23,16 @@
 <script>
 import { mapState, mapActions } from "vuex";
 const { fbDB } = require("../firebase");
-import { ref, orderByChild, startAt, endAt, query, off, onValue, update } from 'firebase/database'
+import {
+  ref,
+  orderByChild,
+  startAt,
+  endAt,
+  query,
+  off,
+  onValue,
+  update,
+} from "firebase/database";
 
 import BookingRecord from "./BookingRecord.vue";
 
@@ -88,9 +102,9 @@ export default {
       ) {
         const now = new Date();
 
-        update(ref(fbDB(), '/'), {
+        update(ref(fbDB(), "/"), {
           [`/bookings/${this.id}/cancelled`]: true,
-          [`/bookings/${this.id}/cancelledByUser`]: true,
+          [`/bookings/${this.id}/cancelledByUser`]: this.user.email,
           [`/cancellations/${this.id}`]: {
             createdAt:
               [
@@ -105,26 +119,24 @@ export default {
                 now.getSeconds().toString().padStart(2, "0"),
               ].join(":"),
           },
-        })
-          .catch((err) => {
-            this.flashError({
-              ...err,
-              type: "error",
-            });
+        }).catch((err) => {
+          this.flashError({
+            ...err,
+            type: "error",
           });
+        });
       }
     },
     reopen() {
       update(ref(fbDB(), `/bookings/${this.id}`), {
         cancelledByUser: false,
         cancelled: false,
-      })
-        .catch((err) => {
-          this.flashError({
-            ...err,
-            type: "error",
-          });
+      }).catch((err) => {
+        this.flashError({
+          ...err,
+          type: "error",
         });
+      });
     },
   },
 };
