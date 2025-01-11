@@ -10,10 +10,7 @@
       <br />{{ booking.pickupTime.substr(11, 5) }}
     </td>
     <td>
-      <span
-        v-if="now"
-        :title="dateformat(booking.createdAt, 'dd mmm yyyy HH:MM')"
-      >
+      <span v-if="now" :title="dateformat(booking.createdAt, 'dd mmm yyyy HH:MM')">
         {{ humanize(now, booking.createdAt) }}
       </span>
       <template v-else>
@@ -59,7 +56,11 @@
       <span v-if="booking.precautions">✓ {{ booking.precautions }}<br /></span>
     </td>
     <td>
-      <em v-if="booking.cancelledByUser">(Cancelled by customer)</em><br />
+      <em v-if="booking.cancelledByUser"
+        >(Cancelled by
+        <!-- before we had teams, cancelledByUser was a boolean -->
+        {{ booking.cancelledByUser === true ? "customer" : booking.cancelledByUser }})</em
+      ><br />
       <slot> </slot>
     </td>
   </tr>
@@ -95,7 +96,7 @@ const _ = require("lodash");
 const dateformat = require("../util/dateformat");
 
 export default {
-  props: ["booking", "now"],
+  props: ["booking", "now", "id"],
   data() {
     return {
       dbRef: null,
@@ -158,9 +159,7 @@ export default {
           ) + ` months ${suffix}`
         );
       } else {
-        return (
-          Math.abs(now.getYear() - dateOfDateStr.getYear()) + ` years ${suffix}`
-        );
+        return Math.abs(now.getYear() - dateOfDateStr.getYear()) + ` years ${suffix}`;
       }
     },
   },

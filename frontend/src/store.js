@@ -114,7 +114,7 @@ getAuth().onAuthStateChanged(async (user) => {
 
     const encodedUserEmail = user.email.replace(/\./g, '%2e')
 
-    await Promise.race([
+    Promise.race([
       new Promise(async (resolve, reject) => {
         // Do a privileged action, and expect it to succeed
         const _userDataResponse = await get(query(ref(fbDB(), '/admins'),
@@ -128,20 +128,24 @@ getAuth().onAuthStateChanged(async (user) => {
         store.commit('setIsAdmin', amIAdmin)
       })
 
-    // Update the userTeams, so we can identify users in the backend
-    // and maybe manage teamTokens in the future
-    await update(
-      ref(fbDB(), `/userTeams/${encodedUserEmail}`),
-      {
-        uid: user.uid,
-        lastLoggedIn: Date.now()
-      }
-    )
+      ; (async () => {
+        const teamData = (await get(
+          ref(fbDB(), `/userTeams/${encodedUserEmail}`),
+        )).val()
+        store.commit('setUserTeamData', teamData)
+      })()
 
-    const teamData = (await get(
-      ref(fbDB(), `/userTeams/${encodedUserEmail}`),
-    )).val()
-    store.commit('setUserTeamData', teamData)
+      ; (async () => {
+        // Update the userTeams, so we can identify users in the backend
+        // and maybe manage teamTokens in the future
+        await update(
+          ref(fbDB(), `/userTeams/${encodedUserEmail}`),
+          {
+            uid: user.uid,
+            lastLoggedIn: Date.now()
+          }
+        )
+      })()
   } else {
     store.commit('setUser', null)
     store.commit('setUserData', null)

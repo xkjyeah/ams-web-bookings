@@ -1,6 +1,7 @@
 <template>
-  <booking-record v-if="rec" :booking="rec" :now="now">
-    <v-toolbar flat>
+  <booking-record v-if="rec" :booking="rec" :now="now" :id="id">
+    <!-- <v-toolbar flat small> -->
+    <div style="text-align: right">
       <v-btn
         icon
         @click="cancel"
@@ -9,10 +10,11 @@
       >
         <v-icon>delete</v-icon>
       </v-btn>
-      <!-- <v-btn icon @click="reopen" title="Uncancel">
+    </div>
+    <!-- <v-btn icon @click="reopen" title="Uncancel">
         <v-icon>restore</v-icon>
       </v-btn> -->
-    </v-toolbar>
+    <!-- </v-toolbar> -->
   </booking-record>
   <tr v-else>
     <td colspan="4">
@@ -89,6 +91,9 @@ export default {
     if (this._stopListening) {
       this._stopListening();
     }
+  },
+  computed: {
+    ...mapState(["user", "now"]),
   },
   methods: {
     ...mapActions(["loadingSpinner", "flashError"]),
