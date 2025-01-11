@@ -1,0 +1,189 @@
+{
+  "rules": {
+    "users": {
+      ".read": "true",
+      ".indexOn": ["email"],
+    },
+    "userDefaults": {
+      "$uid": {
+        ".read": "auth.uid == $uid",
+        ".write": "auth.uid == $uid",
+      }
+    },
+    "userTeams": {
+      "$email": {
+        ".read": "auth.token.email.replace('.', '%2e') == $email",
+        ".write": "auth.token.email.replace('.', '%2e') == $email",
+      }
+    },
+    "drivers": {
+      ".read": "true",
+    },
+    "admins": {
+      ".read": "auth.token.email_verified == true && (
+                  root.child('admins')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .val() == 1)",
+    },
+    "bookings": {
+      ".read": "auth.token.email_verified == true && (
+            root.child('admins')
+            .child(auth.token.email.replace('.', '%2e'))
+            .val() == 1)",
+      ".indexOn": ["pickupTime", "createdAt", "contactEmail", "teamToken"],
+      "$key": {
+        ".read": "
+          auth.token.email_verified == true && (
+            root.child('admins')
+              .child(auth.token.email.replace('.', '%2e'))
+              .val() == 1 ||
+            auth.token.email == data.child('contactEmail').val() ||
+            (
+              root.child('userTeams')
+                .child(auth.token.email.replace('.', '%2e'))
+                .child('teamToken')
+                .exists() &&
+              root.child('userTeams')
+                .child(auth.token.email.replace('.', '%2e'))
+                .child('teamToken')
+                .val() == data.child('teamToken').val()
+            )
+          )
+          ",
+        ".write": "
+          auth.token.email_verified == true && (
+            root.child('admins')
+            .child(auth.token.email.replace('.', '%2e'))
+            .val() == 1 ||
+            (
+              auth.token.email == newData.child('contactEmail').val() &&
+              (
+                auth.token.email == data.child('contactEmail').val() ||
+                null == data.child('contactEmail').val()
+              )
+            )
+          )
+        ",
+        
+        // Teams can cancel for each other
+        "cancelled": {
+          ".write": "
+            auth.token.email_verified == true && (
+              root.child('admins')
+                .child(auth.token.email.replace('.', '%2e'))
+                .val() == 1 ||
+              auth.token.email == root.child('bookings').child($key).child('contactEmail').val() ||
+              (
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .exists() &&
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .val() == root.child('bookings').child($key).child('teamToken').val()
+              )
+            )
+            ",
+        },
+        "cancelledByUser": {
+          ".write": "
+            auth.token.email_verified == true && (
+              root.child('admins')
+                .child(auth.token.email.replace('.', '%2e'))
+                .val() == 1 ||
+              auth.token.email == root.child('bookings').child($key).child('contactEmail').val() ||
+              (
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .exists() &&
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .val() == root.child('bookings').child($key).child('teamToken').val()
+              )
+            )
+            ",
+        },
+      }
+    },
+    "cancellations": {
+      ".read": "auth.token.email_verified == true && (
+            root.child('admins')
+            .child(auth.token.email.replace('.', '%2e'))
+            .val() == 1)",
+      ".indexOn": ["pickupTime", "createdAt", "contactEmail"],
+      "$key": {
+        ".read": "
+            auth.token.email_verified == true && (
+              root.child('admins')
+                .child(auth.token.email.replace('.', '%2e'))
+                .val() == 1 ||
+              auth.token.email == root.child('bookings').child($key).child('contactEmail').val() ||
+              (
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .exists() &&
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .val() == root.child('bookings').child($key).child('teamToken').val()
+              )
+            )",
+        ".write": "
+            auth.token.email_verified == true && (
+              root.child('admins')
+                .child(auth.token.email.replace('.', '%2e'))
+                .val() == 1 ||
+              auth.token.email == root.child('bookings').child($key).child('contactEmail').val() ||
+              (
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .exists() &&
+                root.child('userTeams')
+                  .child(auth.token.email.replace('.', '%2e'))
+                  .child('teamToken')
+                  .val() == root.child('bookings').child($key).child('teamToken').val()
+              )
+            )
+        ",
+        ".indexOn": ["createdAt"]
+      }
+    },
+    "userBookings":  {
+      "$uid": {
+        ".read": "auth.uid == $uid",
+        ".write": "auth.uid == $uid",
+        ".indexOn": ["createdAt", "pickupTime"]
+      }
+    },
+    "teamBookings":  {
+      "$team": {
+        ".read": "
+          root.child('userTeams')
+            .child(auth.token.email.replace('.', '%2e'))
+            .child('teamToken')
+            .exists() &&
+          root.child('userTeams')
+            .child(auth.token.email.replace('.', '%2e'))
+            .child('teamToken')
+            .val() == $team
+        ",
+        ".write": "
+          root.child('userTeams')
+            .child(auth.token.email.replace('.', '%2e'))
+            .child('teamToken')
+            .exists() &&
+          root.child('userTeams')
+            .child(auth.token.email.replace('.', '%2e'))
+            .child('teamToken')
+            .val() == $team
+        ",
+        ".indexOn": ["createdAt", "pickupTime"]
+      }
+    },
+  },
+}
